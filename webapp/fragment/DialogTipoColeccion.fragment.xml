@@ -1,0 +1,48 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" xmlns:form="sap.ui.layout.form">
+	<Dialog title="{i18n>titulo.crearColeccion}" showHeader="false">
+		<form:SimpleForm title="{i18n>titulo.crearColeccion}" class="sapUiResponsiveMargin" layout="ColumnLayout" width="500px"
+			singleContainerFullSize="true" labelSpanL="12" labelSpanXL="12" labelSpanM="12">
+			<Label required="true" text="{i18n>label.tipoColeccion}" labelFor="tipoColeccionSelect"/>
+			<Select id="tipoColeccionSelect" selectedKey="{/seleccionado/tipoColeccion}" change=".onChangeTipoColeccion" forceSelection="false">
+				<items>
+					<core:Item key="A" text="General"/>
+					<core:Item key="P" text="Peculiar"/>
+					<core:Item key="T" text="Traspaso"/>
+					<core:Item key="E" text="Excluído"/>
+				</items>
+			</Select>
+			<Label required="true" text="{i18n>label.tienda}" labelFor="tiendaSelect"/>
+			<Select visible="{path: '/seleccionado/tipoColeccion', formatter: '.formatter.visibleNoAnidado'}" id="tiendaSelect"
+				selectedKey="{/seleccionado/tienda}" change=".onChangeTienda" forceSelection="false"
+				items="{ path: 'TiendasData>/', sorter: { path: 'Tienda' } }">
+				<core:Item key="{TiendasData>Tienda}" text="{TiendasData>Tienda} - {TiendasData>Descripcion}"/>
+			</Select>
+			<Label required="true" text="{i18n>label.fechaInicio}" labelFor="fechaInicioDate"/>
+			<DatePicker id="fechaInicioDate" value="{/seleccionado/fechaInicio}" change="onChangeFechaInicio" valueFormat="yyyyMMdd"
+				displayFormat="dd/MM/yyyy"/>
+			<Label required="true" text="{i18n>label.fechaFin}" labelFor="fechaFinDate"/>
+			<DatePicker id="fechaFinDate" value="{/seleccionado/fechaFin}" change="onChangeFechaFin" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<Label required="true" text="{i18n>label.coleccion}" labelFor="coleccionInput"/>
+			<Input id="coleccionInput" type="Text" placeholder="Informe el descriptivo de la colección..."
+				visible="{path: '/seleccionado/tipoColeccion', formatter: '.formatter.visibleAnidado'}" value="{/seleccionado/coleccion}"/>
+			<Label required="true" text="{i18n>label.nivel}" labelFor="nivelMultiCombo"/>
+			<MultiComboBox id="nivelMultiCombo" selectionChange="onChangeNivel" selectionFinish="onFinishNivel"
+				visible="{path: '/seleccionado/tipoColeccion', formatter: '.formatter.visibleAnidado'}">
+				<core:Item key="1" text="Nivel 1"/>
+				<core:Item key="2" text="Nivel 2"/>
+				<core:Item key="3" text="Nivel 3"/>
+				<core:Item key="4" text="Nivel 4"/>
+				<core:Item key="5" text="Nivel 5"/>
+				<core:Item key="6" text="Nivel 6"/>
+				<core:Item key="7" text="Nivel 7"/>
+				<core:Item key="8" text="Nivel 8"/>
+				<core:Item key="9" text="Nivel 9"/>
+				<core:Item key="10" text="Nivel 10"/>
+			</MultiComboBox>
+		</form:SimpleForm>
+		<endButton>
+			<Button text="Aceptar" press=".onPressDialogButtonAceptar"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

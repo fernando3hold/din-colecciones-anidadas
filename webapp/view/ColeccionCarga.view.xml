@@ -1,0 +1,66 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:uxap="sap.uxap" xmlns:mvc="sap.ui.core.mvc" xmlns:f="sap.f" xmlns="sap.m"
+	xmlns:layout="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:table="sap.ui.table"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" controllerName="dinosol.din-colecciones-anidadas.controller.Coleccion"
+	xmlns:html="http://www.w3.org/1999/xhtml">
+	<uxap:ObjectPageLayout id="opl" useIconTabBar="true" showTitleInHeaderContent="true" showFooter="true">
+		<uxap:headerTitle>
+			<uxap:ObjectPageDynamicHeaderTitle>
+				<uxap:expandedHeading>
+					<f:Avatar src="sap-icon://dimension" class="sapUiTinyMarginEnd"/>
+					<Title
+						text="{parts: [{path: '/seleccionado/tipoColeccion'}, {path: '/seleccionado/tienda'}, {path: '/seleccionado/coleccion'}], formatter: '.formatter.crearDescripcionColec'}"
+						wrapping="true" class="sapUiTinyMarginEnd"/>
+				</uxap:expandedHeading>
+				<uxap:snappedHeading>
+					<FlexBox fitContainer="true" alignItems="Center">
+						<f:Avatar src="sap-icon://dimension" class="sapUiTinyMarginEnd"/>
+						<Title
+							text="{parts: [{path: '/seleccionado/tipoColeccion'}, {path: '/seleccionado/tienda'}], formatter: '.formatter.crearDescripcionColec'}"
+							wrapping="true"/>
+					</FlexBox>
+				</uxap:snappedHeading>
+				<uxap:expandedContent></uxap:expandedContent>
+			</uxap:ObjectPageDynamicHeaderTitle>
+		</uxap:headerTitle>
+		<uxap:headerContent>
+			<FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
+				<f:Avatar src="sap-icon://dishwasher" displaySize="L" displayShape="Square" class="sapUiTinyMarginEnd"/>
+				<VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<Label text="{i18n>label.tipoColeccion}:"/>
+					<Text text="{path: '/seleccionado/tipoColeccion', formatter: '.formatter.formatTipoColeccion'}"/>
+				</VBox>
+				<!--				<VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<Label visible="{path: '/seleccionado/tipoColeccion', formatter: '.formatter.visibleNoAnidado'}" text="{i18n>label.tienda}:"/>
+					<Text visible="{path: '/seleccionado/tipoColeccion', formatter: '.formatter.visibleNoAnidado'}" text="{/seleccionado/tienda}"/>
+				</VBox> -->
+				<VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<Label text="{i18n>label.fechaInicio}"/>
+					<Text text="{path: '/seleccionado/fechaInicio', formatter: '.formatter.convertStringToDateString'}"/>
+				</VBox>
+				<VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<Label text="{i18n>label.fechaFin}"/>
+					<Text text="{path: '/seleccionado/fechaFin', formatter: '.formatter.convertStringToDateString'}"/>
+				</VBox>
+				<VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<Label visible="{path: '/seleccionado/tipoColeccion', formatter: '.formatter.visibleAnidado'}" text="{i18n>label.coleccion}"/>
+					<Text visible="{path: '/seleccionado/tipoColeccion', formatter: '.formatter.visibleAnidado'}" text="{/seleccionado/coleccion}"/>
+				</VBox>
+				<VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<Label visible="{path: '/seleccionado/tipoColeccion', formatter: '.formatter.visibleAnidado'}" text="{i18n>label.niveles}"/>
+					<Text visible="{path: '/seleccionado/tipoColeccion', formatter: '.formatter.visibleAnidado'}" text="{/seleccionado/niveles}"/>
+				</VBox>
+			</FlexBox>
+		</uxap:headerContent>
+		<uxap:sections></uxap:sections>
+		<uxap:footer>
+			<Bar>
+				<contentLeft>
+					<Button text="{i18n>button.errors}" type="Emphasized" icon="sap-icon://message-popup" press=".onPressAbrirErrores"/>
+				</contentLeft>
+				<contentRight>
+					<Button text="{i18n>button.create}" type="Emphasized" icon="sap-icon://paper-plane" press=".onPressCrear"/>
+				</contentRight>
+			</Bar>
+		</uxap:footer>
+	</uxap:ObjectPageLayout>
+</mvc:View>

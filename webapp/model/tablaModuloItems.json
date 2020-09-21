@@ -1,0 +1,31 @@
+[{
+	"label": "",
+	"field": "",
+	"type": "Semaforo",
+	"width": "2.5rem"
+},{
+	"label": "{i18n>label.articulo}",
+	"field": "Matnr",
+	"type": "Text",
+	"width": "5rem"
+}, {
+	"label": "{i18n>label.descripcion}",
+	"field": "Maktx",
+	"type": "Text",
+	"width": "10rem"
+}, {
+	"label": "{i18n>label.noAnidar}",
+	"field": "NoAnidar",
+	"type": "BooleanText",
+	"width": "5rem"
+}, {
+	"label": "{i18n>label.fechaInicioArticulos}",
+	"field": "Datab",
+	"type": "Date",
+	"width": "9rem"
+}, {
+	"label": "{i18n>label.fechaFinArticulos}",
+	"field": "Datbi",
+	"type": "Date",
+	"width": "9rem"
+}]

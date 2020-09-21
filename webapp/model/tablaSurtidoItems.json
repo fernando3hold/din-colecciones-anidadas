@@ -1,0 +1,21 @@
+[{
+	"label": "{i18n>label.tienda}",
+	"field": "Locnr",
+	"type": "Text",
+	"width": "5rem"
+}, {
+	"label": "{i18n>label.descripcion}",
+	"field": "Name1",
+	"type": "Text",
+	"width": "10rem"
+}, {
+	"label": "{i18n>label.fechaInicioTiendas}",
+	"field": "Datab",
+	"type": "Date",
+	"width": "10rem"
+}, {
+	"label": "{i18n>label.fechaFinTiendas}",
+	"field": "Datbi",
+	"type": "Date",
+	"width": "10rem"
+}]

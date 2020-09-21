@@ -1,0 +1,20 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:fb="sap.ui.comp.filterbar"
+	xmlns:helpDialog="sap.ui.comp.valuehelpdialog" xmlns:uxap="sap.uxap">
+	<helpDialog:ValueHelpDialog id="valueHelpDialogColeccion" title="{i18n>title.searchHelpColeccion}" supportRanges="false" tokenDisplayBehavior="idOnly"
+		cancel=".closeValueHelpDialogColeccion" ok="onOKValueHelpColeccion" filterMode="true" key="Descripcion" descriptionKey="Descripcion">
+		<helpDialog:filterBar>
+			<fb:FilterBar showRestoreOnFB="false" showClearOnFB="true" showGoOnFB="true" clear=".clearFiltersValueHelpColeccion"
+				showFilterConfiguration="false" filterBarExpanded="true" search=".onSearchValueHelpColeccion" >
+				<!-- considerGroupTitle="true" -->
+				<fb:filterGroupItems>
+					<fb:FilterGroupItem groupName="Filtros" groupTitle="Descripcion" name="A" label="{i18n>label.coleccion}" labelTooltip="ID"
+						visibleInFilterBar="true">
+						<fb:control>
+							<Input name="Descripcion"/>
+						</fb:control>
+					</fb:FilterGroupItem>
+				</fb:filterGroupItems>
+			</fb:FilterBar>
+		</helpDialog:filterBar>
+	</helpDialog:ValueHelpDialog>
+</core:FragmentDefinition>

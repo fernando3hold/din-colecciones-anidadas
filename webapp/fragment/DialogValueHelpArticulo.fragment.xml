@@ -1,0 +1,26 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:fb="sap.ui.comp.filterbar"
+	xmlns:helpDialog="sap.ui.comp.valuehelpdialog" xmlns:uxap="sap.uxap">
+	<helpDialog:ValueHelpDialog id="valueHelpDialog" title="{i18n>title.searchHelpArtículo}" supportRanges="false" tokenDisplayBehavior="idOnly"
+		cancel=".closeValueHelpDialogArticulo" ok="onOKValueHelpArticulo" filterMode="true" key="Id" supportMultiselect="false">
+		<helpDialog:filterBar>
+			<fb:FilterBar showRestoreOnFB="false" showClearOnFB="true" showGoOnFB="true" clear=".clearFiltersValueHelpArticulo"
+				showFilterConfiguration="false" filterBarExpanded="true" search=".onSearchValueHelpArticulo">
+				<!-- considerGroupTitle="true" -->
+				<fb:filterGroupItems>
+					<fb:FilterGroupItem groupName="Filtros" groupTitle="Articulo" name="A" label="{i18n>label.codigoArticulo}" labelTooltip="ID"
+						visibleInFilterBar="true">
+						<fb:control>
+							<Input name="Articulo"/>
+						</fb:control>
+					</fb:FilterGroupItem>
+					<fb:FilterGroupItem groupName="Filtros" groupTitle="Articulo" name="B" label="{i18n>label.descArticulo}" labelTooltip="Descripcion"
+						visibleInFilterBar="true">
+						<fb:control>
+							<Input name="Descripcion"/>
+						</fb:control>
+					</fb:FilterGroupItem>
+				</fb:filterGroupItems>
+			</fb:FilterBar>
+		</helpDialog:filterBar>
+	</helpDialog:ValueHelpDialog>
+</core:FragmentDefinition>
