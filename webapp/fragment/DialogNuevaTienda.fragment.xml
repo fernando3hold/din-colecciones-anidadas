@@ -5,18 +5,16 @@
 			singleContainerFullSize="true" labelSpanL="12" labelSpanXL="12" labelSpanM="12">
 			<!-- PROVEEDOR -->
 			<Label text="{i18n>label.tienda}"/>
-			<!--	<Input id="tienda" value="{newTienda>/Locnr}" valueLiveUpdate="false" showValueHelp="true" valueHelpRequest=".onRequestValueHelpArticulo"
-				change=".onChangeArticulo"/> -->
-			<Select id="tienda" selectedKey="{newTienda>/Locnr}" change=".onChangeTienda" forceSelection="false"
-				items="{ path: 'TiendasData>/', sorter: { path: 'Tienda' } }">
-				<core:Item key="{TiendasData>Tienda}" text="{TiendasData>Tienda} - {TiendasData>Descripcion}"/>
+			<Select id="tienda" selectedKey="{newTienda>/Tienda}" change=".onChangeTienda" forceSelection="false"
+				items="{ path: 'tiendas>/', sorter: { path: 'Tienda' } }">
+				<core:Item key="{tiendas>Tienda}" text="{tiendas>Tienda} - {tiendas>Descripcion}"/>
 			</Select>
 			<!-- FECHA INICIO -->
 			<Label text="{i18n>label.fechaInicio}"/>
-			<DatePicker id="inicio" value="{newTienda>/Datab}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<DatePicker id="inicio" value="{newTienda>/FechaInicio}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
 			<!-- FECHA FIN -->
 			<Label text="{i18n>label.fechaFin}"/>
-			<DatePicker id="fin" value="{newTienda>/Datbi}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<DatePicker id="fin" value="{newTienda>/FechaFin}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
 		</form:SimpleForm>
 		<beginButton>
 			<Button text="Guardar" press=".onPressAñadirTienda"/>

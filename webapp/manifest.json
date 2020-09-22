@@ -24,7 +24,7 @@
 		}
 	},
 	"sap.ui": {
-		"fullWidth": true,
+		"fullWidth": false,
 		"technology": "UI5",
 		"icons": {
 			"icon": "",
@@ -75,6 +75,17 @@
 			},
 			"data": {
 				"type": "sap.ui.model.json.JSONModel"
+			},
+			"tiendas": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
+			"textfieldArticulo": {
+				"type": "sap.ui.model.json.JSONModel",
+				"uri": "model/textfieldArticulo.json"
+			},
+			"textfieldTienda": {
+				"type": "sap.ui.model.json.JSONModel",
+				"uri": "model/textfieldTienda.json"
 			}
 		},
 		"resources": {

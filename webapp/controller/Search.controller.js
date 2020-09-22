@@ -26,6 +26,7 @@ sap.ui.define([
 				this.getView().addDependent(this.getView().searchDialog);
 			}
 			jQuery.sap.delayedCall(200, this, function () {
+				this.loadTiendas();
 				this.getView().searchDialog.open();
 			});
 		},
@@ -50,10 +51,10 @@ sap.ui.define([
 						"Denominacion": "Modulo prueba",
 						"Clase": "4",
 						"FechaInicio": "20200921",
-						"FechaFin": "99991131",
+						"FechaFin": "99991231",
 						"articulos": [{
 							"Articulo": "1040494",
-							"Denominacion": "Articulo 1",
+							"Descripcion": "Articulo 1",
 							"FechaInicio": "20200921",
 							"FechaFin": "99991131"
 						}]
@@ -62,12 +63,12 @@ sap.ui.define([
 						"Surtido": "2",
 						"Denominacion": "Surtido prueba",
 						"FechaInicio": "20200921",
-						"FechaFin": "99991131",
+						"FechaFin": "99991231",
 						"tiendas": [{
 							"Tienda": "9001",
 							"Denominacion": "Tienda 1",
 							"FechaInicio": "20200921",
-							"FechaFin": "99991131"
+							"FechaFin": "99991231"
 						}]
 					}
 				}, {
@@ -77,24 +78,24 @@ sap.ui.define([
 						"Denominacion": "Modulo prueba 2",
 						"Clase": "4",
 						"FechaInicio": "20200921",
-						"FechaFin": "99991131",
+						"FechaFin": "99991231",
 						"articulos": [{
 							"Articulo": "1040495",
-							"Denominacion": "Articulo 2",
+							"Descripcion": "Articulo 2",
 							"FechaInicio": "20200921",
-							"FechaFin": "99991131"
+							"FechaFin": "99991231"
 						}]
 					},
 					"surtido": {
 						"Surtido": "3",
 						"Denominacion": "Surtido prueba 2",
 						"FechaInicio": "20200921",
-						"FechaFin": "99991131",
+						"FechaFin": "99991231",
 						"tiendas": [{
 							"Tienda": "9001",
 							"Denominacion": "Tienda 2",
 							"FechaInicio": "20200921",
-							"FechaFin": "99991131"
+							"FechaFin": "99991231"
 						}]
 					}
 				}]
@@ -112,34 +113,8 @@ sap.ui.define([
 				success: function (oData) {
 
 					sap.ui.core.BusyIndicator.hide();
+					
 					var oFinalData = that.adjustDataOnRetrieval(sColeccion, oData);
-					var oFinalData = {
-						"id": "Prueba",
-						"niveles": [{
-							"NumNivel": 1,
-							"modulo": {
-								"Modulo": "",
-								"Denominacion": "",
-								"Clase": "",
-								"articulos": [{
-									"Articulo": "1040494",
-									"Denominacion": "Articulo 1",
-									"FechaInicio": "20200921",
-									"FechaFin": "99991131"
-								}]
-							},
-							"surtido": {
-								"Surtido": "",
-								"Denominacion": "",
-								"tiendas": [{
-									"Tienda": "9001",
-									"Denominacion": "Tienda 1",
-									"FechaInicio": "20200921",
-									"FechaFin": "99991131"
-								}]
-							}
-						}]
-					};
 					that.setComponentModelProperty("data", "/coleccion", oFinalData);
 					that.setComponentModelProperty("data", "/originalColeccion", oData);
 					that.getComponentModel("data").updateBindings(true);
@@ -368,6 +343,22 @@ sap.ui.define([
 			this.getView().searchHelpColeccionDialog.close();
 			this.toggleOpenSH();
 			document.removeEventListener("keypress", this.onKeyPressColeccionSH);
+		},
+		
+		loadTiendas: function () {
+			var that = this;
+			this.getComponentModel().read("/MCTiendaSet", {
+				success: function (oData) {
+					that.getComponentModel("tiendas").setProperty("/", oData.results);
+				},
+				error: function (oError) {
+					var oErrorModel = new sap.ui.model.json.JSONModel();
+					oErrorModel.setJSON(oError.responseText);
+					sap.m.MessageToast.show(oErrorModel.getData().error.message.value, {
+						"width": "30em"
+					});
+				}
+			});
 		},
 
 	});

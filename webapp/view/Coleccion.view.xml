@@ -1,5 +1,5 @@
 <mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:uxap="sap.uxap" xmlns:f="sap.f"
-	xmlns:form="sap.ui.layout.form" controllerName="dinosol.din-colecciones-anidadas.controller.Coleccion"
+	xmlns:form="sap.ui.layout.form" controllerName="dinosol.din-colecciones-anidadas.controller.Coleccion" xmlns:l="sap.ui.layout"
 	xmlns:html="http://www.w3.org/1999/xhtml">
 	<uxap:ObjectPageLayout id="opl" useIconTabBar="true" showTitleInHeaderContent="true" navigate=".onNavTab"
 		sections="{data>/coleccion/niveles}" subSectionLayout="TitleOnTop" showFooter="{viewModel>/editMode}">
@@ -11,13 +11,16 @@
 				</uxap:expandedHeading>
 				<uxap:snappedHeading>
 					<FlexBox fitContainer="true" alignItems="Center">
-						<f:Avatar src="sap-icon://dishwasher" class="sapUiTinyMarginEnd"/>
-						<Title text="{data>/coleccion/id} - {data>/coleccion/id}" wrapping="true"/>
+						<f:Avatar src="sap-icon://sap-box" class="sapUiTinyMarginEnd"/>
+						<Title text="{data>/coleccion/id}" wrapping="true"/>
 					</FlexBox>
 				</uxap:snappedHeading>
 				<uxap:expandedContent>
-					<Text text="campo 1"/>
+					<Text text="Colección general"/>
 				</uxap:expandedContent>
+				<uxap:snappedContent>
+					<Text text="Colección general"/>
+				</uxap:snappedContent>
 				<!--<uxap:navigationActions>-->
 				<!--	<OverflowToolbarButton type="Transparent" icon="sap-icon://decline" press="handleClose"/>-->
 				<!--</uxap:navigationActions>-->
@@ -28,111 +31,143 @@
 		</uxap:headerTitle>
 		<uxap:headerContent>
 			<FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
-				<f:Avatar src="sap-icon://dishwasher" displaySize="L" displayShape="Square" class="sapUiTinyMarginEnd"/>
-				<VBox justifyContent="Center" class="sapUiSmallMarginEnd">
-					<Label text="{i18n>label.proveedor}"/>
-					<Text text="campo 2"/>
+				<f:Avatar src="sap-icon://sap-box" displaySize="L" displayShape="Circle" class="sapUiLargeMarginEnd"/>
+				<!--<VBox justifyContent="Center" class="sapUiLargeMarginEnd">-->
+				<!--	<Label text="{i18n>label.tipoColeccion}"/>-->
+				<!--	<Text text="General"/>-->
+				<!--</VBox>-->
+				<VBox justifyContent="Center" class="sapUiLargeMarginEnd">
+					<Label text="{i18n>label.fechaInicio}"/>
+					<Text text="{path: 'data>/coleccion/niveles/0/modulo/FechaInicio', formatter: '.formatter.formatDateShow'}"/>
 				</VBox>
-				<VBox justifyContent="Center" class="sapUiSmallMarginEnd">
-					<Label text="{i18n>label.descripcion}"/>
-					<Text text="campo 3"/>
+				<VBox justifyContent="Center" class="sapUiLargeMarginEnd">
+					<Label text="{i18n>label.fechaFin}"/>
+					<Text text="{path: 'data>/coleccion/niveles/0/modulo/FechaFin' , formatter: '.formatter.formatDateShow'}"/>
 				</VBox>
-				<VBox justifyContent="Center" class="sapUiSmallMarginEnd">
-					<Label text="{i18n>label.centro}"/>
-					<Text text="campo 4"/>
+				<VBox justifyContent="Center" class="sapUiLargeMarginEnd">
+					<Label text="{i18n>label.niveles}"/>
+					<Text text="{= ${data>/coleccion/niveles}.length}" /> 
+					<!--<NumericContent value="{= ${data>/coleccion/niveles}.length}" scale="Niveles" withMargin="false"/>-->
 				</VBox>
 			</FlexBox>
 		</uxap:headerContent>
 		<uxap:sections>
 			<uxap:ObjectPageSection showTitle="true" titleUppercase="false" title="Nivel {data>NumNivel}">
-				<uxap:ObjectPageSubSection title="Módulo">
+				<uxap:ObjectPageSubSection >
+					<uxap:actions>
+						<!--<Button text="Añadir artículo" press=".onPressAddArticulo" type="Transparent" icon="sap-icon://add" visible="{viewModel>/editMode}"/>-->
+						<MenuButton text="Añadir" visible="{viewModel>/editMode}" type="Transparent" icon="sap-icon://add">
+							<menu>
+								<Menu>
+									<MenuItem text="Artículo" icon="sap-icon://suitcase" press="onPressAddArticulo"/>
+									<MenuItem text="Tienda" icon="sap-icon://retail-store" press="onPressAddTienda"/>
+								</Menu>
+							</menu>
+						</MenuButton>
+						<Button text="Borrar" press=".onPressBorrar" type="Transparent" icon="sap-icon://sys-cancel" visible="{viewModel>/editMode}"/>
+						<Button text="Mover" icon="sap-icon://action" press="onPressMover" type="Transparent" visible="{viewModel>/editMode}"/>
+						<Button text="Editar fechas" press=".onPressEditarFechas" type="Transparent" icon="sap-icon://edit-outside" visible="{viewModel>/editMode}"/>
+						<MenuButton text="Subir" visible="{viewModel>/editMode}" type="Transparent" icon="sap-icon://upload-to-cloud">
+							<menu>
+								<Menu>
+									<MenuItem key="Articulos" text="Artículo" icon="sap-icon://suitcase" press="onPressSubirMasiva"/>
+									<MenuItem key="Tiendas" text="Tienda" icon="sap-icon://retail-store" press="onPressSubirMasiva"/>
+								</Menu>
+							</menu>
+						</MenuButton>
+					</uxap:actions>
 					<uxap:blocks>
-						<VBox>
-							<HBox width="100%">
-								<VBox class="sapUiLargeMarginBeginEnd">
-									<Label text="Modulo" design="Bold"/>
-									<Text text="{data>modulo/Modulo}"/>
-								</VBox>
-								<VBox class="sapUiLargeMarginBeginEnd">
-									<Label text="Denominacion" design="Bold"/>
-									<Text text="{data>modulo/Denominacion}"/>
-								</VBox>
-								<VBox class="sapUiLargeMarginBeginEnd">
-									<Label text="Clase" design="Bold"/>
-									<Text text="{data>modulo/Clase}"/>
-								</VBox>
-								<VBox class="sapUiLargeMarginBeginEnd">
-									<Label text="Fecha inicio" design="Bold"/>
-									<Text text="{path : 'data>modulo/FechaInicio', formatter: '.formatter.formatDateShow'}" visible="{viewModel>/displayMode}"/>
-									<DatePicker value="{data>modulo/FechaInicio}" visible="{viewModel>/editMode}"/>
-								</VBox>
-								<VBox class="sapUiLargeMarginBeginEnd">
-									<Label text="Fecha fin" design="Bold"/>
-									<Text text="{path: 'data>modulo/FechaFin', formatter: '.formatter.formatDateShow'}" visible="{viewModel>/displayMode}"/>
-									<DatePicker value="{data>modulo/FechaFin}" visible="{viewModel>/editMode}"/>
-								</VBox>
-							</HBox>
-							<List items="{data>modulo/articulos}" width="auto" class="sapUiMediumMarginBegin sapUiLargeMarginTop" mode="{= ${viewModel>/displayMode}? 'None': 'MultiSelect' }">
-								<headerToolbar>
-									<Toolbar>
-										<content>
-											<Title text="{= 'Articulos ('+ ${data>modulo/articulos}.length +')'}"/>
-										</content>
-									</Toolbar>
-								</headerToolbar>
-								<items>
-									<StandardListItem title="{data>Denominacion}" description="{data>Articulo}"
-										info="{parts: ['data>FechaInicio', 'data>FechaFin'], formatter: '.formatter.formatDateShowTwo'}"/>
-								</items>
-							</List>
-						</VBox>
+						<HBox>
+							<VBox width="50%" class="sapUiLargeMarginEnd">
+								<HBox width="100%" class="sapUiMediumMarginTop">
+									<VBox class="sapUiSmallMarginBeginEnd">
+										<Label text="Modulo" design="Bold"/>
+										<Text text="{data>modulo/Modulo}"/>
+									</VBox>
+									<VBox class="sapUiSmallMarginBeginEnd">
+										<Label text="Denominacion" design="Bold"/>
+										<Text text="{data>modulo/Denominacion}"/>
+									</VBox>
+									<VBox class="sapUiSmallMarginBeginEnd">
+										<Label text="Clase" design="Bold"/>
+										<Text text="{data>modulo/Clase}"/>
+									</VBox>
+									<VBox class="sapUiSmallMarginBeginEnd">
+										<Label text="Fecha inicio" design="Bold"/>
+										<Text text="{path : 'data>modulo/FechaInicio', formatter: '.formatter.formatDateShow'}"/>
+										<!--  visible="{viewModel>/displayMode}" -->
+										<!--<DatePicker value="{data>modulo/FechaInicio}" visible="{viewModel>/editMode}" width="200px"/>-->
+									</VBox>
+									<VBox class="sapUiSmallMarginBeginEnd">
+										<Label text="Fecha fin" design="Bold"/>
+										<Text text="{path: 'data>modulo/FechaFin', formatter: '.formatter.formatDateShow'}"/>
+										<!--  visible="{viewModel>/displayMode}" -->
+										<!--<DatePicker value="{data>modulo/FechaFin}" visible="{viewModel>/editMode}" width="200px"/>-->
+									</VBox>
+								</HBox>
+								<List items="{data>modulo/articulos}" width="auto" class="sapUiMediumMarginTop" mode="{= ${viewModel>/displayMode}? 'None': 'MultiSelect' }">
+									<headerToolbar>
+										<Toolbar>
+											<content>
+												<Title text="{= 'Articulos ('+ ${data>modulo/articulos}.length +')'}"/>
+											</content>
+										</Toolbar>
+									</headerToolbar>
+									<items>
+										<StandardListItem title="{data>Articulo}" description="{data>Descripcion}"
+											info="{parts: ['data>FechaInicio', 'data>FechaFin'], formatter: '.formatter.formatDateShowTwo'}"/>
+									</items>
+								</List>
+							</VBox>
+							<VBox width="50%" class="">
+								<HBox width="100%" class="sapUiMediumMarginTop">
+									<VBox class="sapUiSmallMarginBeginEnd">
+										<Label text="Surtido" design="Bold"/>
+										<Text text="{data>surtido/Surtido}"/>
+									</VBox>
+									<VBox class="sapUiSmallMarginBeginEnd">
+										<Label text="Denominacion" design="Bold"/>
+										<Text text="{data>surtido/Denominacion}"/>
+									</VBox>
+									<VBox class="sapUiSmallMarginBeginEnd">
+										<Label text="Fecha" design="Bold"/>
+										<Text text="{path: 'data>surtido/FechaInicio' , formatter: '.formatter.formatDateShow'}"/>
+										<!--  visible="{viewModel>/displayMode}" -->
+										<!--<DatePicker value="{data>surtido/FechaInicio}" visible="{viewModel>/editMode}" width="200px"/>-->
+									</VBox>
+									<VBox class="sapUiSmallMarginBeginEnd">
+										<Label text="Fecha fin" design="Bold"/>
+										<Text text="{path: 'data>surtido/FechaFin', formatter: '.formatter.formatDateShow'}"/>
+										<!--  visible="{viewModel>/displayMode}" -->
+										<!--<DatePicker value="{data>surtido/FechaFin}" visible="{viewModel>/editMode}" width="200px"/>-->
+									</VBox>
+								</HBox>
+								<List items="{data>surtido/tiendas}" width="auto" class="sapUiMediumMarginTop" mode="{= ${viewModel>/displayMode}? 'None': 'MultiSelect' }">
+									<headerToolbar>
+										<Toolbar>
+											<content>
+												<Title text="{= 'Tiendas ('+ ${data>surtido/tiendas}.length +')'}"/>
+											</content>
+										</Toolbar>
+									</headerToolbar>
+									<items>
+										<StandardListItem title="{data>Tienda}"
+											description="{parts: ['data>FechaInicio', 'data>FechaFin'], formatter: '.formatter.formatDateShowTwo'}"/>
+									</items>
+								</List>
+							</VBox>
+						</HBox>
 					</uxap:blocks>
 				</uxap:ObjectPageSubSection>
-				<uxap:ObjectPageSubSection title="Surtido">
-					<uxap:blocks>
-						<VBox>
-							<HBox width="100%">
-								<VBox class="sapUiLargeMarginBeginEnd">
-									<Label text="Surtido" design="Bold"/>
-									<Text text="{data>surtido/Surtido}"/>
-								</VBox>
-								<VBox class="sapUiLargeMarginBeginEnd">
-									<Label text="Denominacion" design="Bold"/>
-									<Text text="{data>surtido/Denominacion}"/>
-								</VBox>
-								<VBox class="sapUiLargeMarginBeginEnd">
-									<Label text="Fecha" design="Bold"/>
-									<Text text="{path: 'data>surtido/FechaInicio' , formatter: '.formatter.formatDateShow'}" visible="{viewModel>/displayMode}"/>
-									<DatePicker value="{data>surtido/FechaInicio}" visible="{viewModel>/editMode}"/>
-								</VBox>
-								<VBox class="sapUiLargeMarginBeginEnd">
-									<Label text="Fecha fin" design="Bold"/>
-									<Text text="{path: 'data>surtido/FechaFin', formatter: '.formatter.formatDateShow'}" visible="{viewModel>/displayMode}"/>
-									<DatePicker value="{data>surtido/FechaFin}" visible="{viewModel>/editMode}"/>
-								</VBox>
-							</HBox>
-							<List items="{data>surtido/tiendas}" width="auto" class="sapUiMediumMarginBegin sapUiLargeMarginTop" mode="{= ${viewModel>/displayMode}? 'None': 'MultiSelect' }">
-								<headerToolbar>
-									<Toolbar>
-										<content>
-											<Title text="{= 'Tiendas ('+ ${data>surtido/tiendas}.length +')'}"/>
-										</content>
-									</Toolbar>
-								</headerToolbar>
-								<items>
-									<StandardListItem title="{data>Denominacion}" info="{data>Tiendas}"
-										description="{parts: ['data>FechaInicio', 'data>FechaFin'], formatter: '.formatter.formatDateShowTwo'}"/>
-								</items>
-							</List>
-						</VBox>
-					</uxap:blocks>
-				</uxap:ObjectPageSubSection>
+				<!--<uxap:ObjectPageSubSection title="Surtido">-->
+				<!--	<uxap:blocks>-->
+				<!--	</uxap:blocks>-->
+				<!--</uxap:ObjectPageSubSection>-->
 			</uxap:ObjectPageSection>
 		</uxap:sections>
 		<uxap:footer>
 			<Bar>
 				<contentRight>
-					<Button text="Mover" icon="sap-icon://action" press="onPressMover" type="Transparent"/>
 					<Button text="Enviar" icon="sap-icon://paper-plane" press="onPressEnviar" type="Emphasized"/>
 				</contentRight>
 			</Bar>

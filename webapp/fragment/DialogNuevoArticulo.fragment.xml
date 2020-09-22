@@ -5,19 +5,19 @@
 			singleContainerFullSize="true" labelSpanL="12" labelSpanXL="12" labelSpanM="12">
 			<!-- PROVEEDOR -->
 			<Label text="{i18n>label.articulo}"/>
-			<Input id="articulo" value="{newArticulo>/Matnr}" valueLiveUpdate="false" showValueHelp="true"
+			<Input id="articulo" value="{newArticulo>/Articulo}" valueLiveUpdate="false" showValueHelp="true"
 				valueHelpRequest=".onRequestValueHelpArticulo" change=".onChangeArticulo"/>
-			<Text text="{newArticulo>/Maktx}"/>
+			<Text text="{newArticulo>/Descripcion}"/>
 			<!-- NO ANIDAR -->
 			<Label text="{i18n>label.noAnidar}" visible="false"/>
 			<CheckBox id="cbNoAnidar" text="{i18n>label.noAnidar}" selected="{newArticulo>/NoAnidar}"
 				visible="{= ${/seleccionado/tipoColeccion} === 'A' ? true: false}"/>
 			<!-- FECHA INICIO -->
 			<Label text="{i18n>label.fechaInicio}"/>
-			<DatePicker id="inicio" value="{newArticulo>/Datab}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<DatePicker id="inicio" value="{newArticulo>/FechaInicio}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
 			<!-- FECHA FIN -->
 			<Label text="{i18n>label.fechaFin}"/>
-			<DatePicker id="fin" value="{newArticulo>/Datbi}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<DatePicker id="fin" value="{newArticulo>/FechaFin}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
 		</form:SimpleForm>
 		<beginButton>
 			<Button text="Guardar" press=".onPressAñadirArticulo"/>

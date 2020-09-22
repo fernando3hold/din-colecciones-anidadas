@@ -1,6 +1,6 @@
 {
-	"Artículo": "Matnr",
+	"Artículo": "Articulo",
 	"No anidar": "NoAnidar",
-	"Fecha inicio": "Datab",
-	"Fecha fin": "Datbi"
+	"Fecha inicio": "FechaInicio",
+	"Fecha fin": "FechaFin"
 }
