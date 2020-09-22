@@ -56,6 +56,14 @@
 				<uxap:ObjectPageSubSection >
 					<uxap:actions>
 						<!--<Button text="Añadir artículo" press=".onPressAddArticulo" type="Transparent" icon="sap-icon://add" visible="{viewModel>/editMode}"/>-->
+						<MenuButton text="Subir" visible="{viewModel>/editMode}" type="Transparent" icon="sap-icon://upload-to-cloud">
+							<menu>
+								<Menu>
+									<MenuItem key="Articulos" text="Artículo" icon="sap-icon://suitcase" press="onPressSubirMasiva"/>
+									<MenuItem key="Tiendas" text="Tienda" icon="sap-icon://retail-store" press="onPressSubirMasiva"/>
+								</Menu>
+							</menu>
+						</MenuButton>
 						<MenuButton text="Añadir" visible="{viewModel>/editMode}" type="Transparent" icon="sap-icon://add">
 							<menu>
 								<Menu>
@@ -67,14 +75,6 @@
 						<Button text="Borrar" press=".onPressBorrar" type="Transparent" icon="sap-icon://sys-cancel" visible="{viewModel>/editMode}"/>
 						<Button text="Mover" icon="sap-icon://action" press="onPressMover" type="Transparent" visible="{viewModel>/editMode}"/>
 						<Button text="Editar fechas" press=".onPressEditarFechas" type="Transparent" icon="sap-icon://edit-outside" visible="{viewModel>/editMode}"/>
-						<MenuButton text="Subir" visible="{viewModel>/editMode}" type="Transparent" icon="sap-icon://upload-to-cloud">
-							<menu>
-								<Menu>
-									<MenuItem key="Articulos" text="Artículo" icon="sap-icon://suitcase" press="onPressSubirMasiva"/>
-									<MenuItem key="Tiendas" text="Tienda" icon="sap-icon://retail-store" press="onPressSubirMasiva"/>
-								</Menu>
-							</menu>
-						</MenuButton>
 					</uxap:actions>
 					<uxap:blocks>
 						<HBox>

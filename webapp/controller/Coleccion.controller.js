@@ -331,14 +331,15 @@ sap.ui.define([
 		},
 
 		fillDescripcionArticulos: function (sArticulo, sNivel, oDataArticulo) {
-			var aItems = this.oModel.getProperty("/items/" + sNivel);
-
-			for (var i = 0; i < aItems.length; i++) {
-				if (aItems[i].Articulo === oDataArticulo.Articulo) {
-					aItems[i].Descripcion = oDataArticulo.Descripcion;
+			var aItems = this.getArticulosInLevel(),
+				sAuxArticulo = oDataArticulo;
+			aItems.forEach(function(oItem){
+				if (oItem.Articulo === sAuxArticulo.Articulo) {
+					oItem.Descripcion = sAuxArticulo.Descripcion;
 				}
-			}
-			this.oModel.setProperty("/items/" + sNivel, aItems);
+			});
+			// this.oModel.setProperty("/items/" + sNivel, aItems);
+			this.setArticulosInLevel(/* iLevel */ undefined, aItems)
 		},
 		
 		onPressBorrar : function(){
