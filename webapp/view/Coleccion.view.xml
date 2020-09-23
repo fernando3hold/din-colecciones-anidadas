@@ -46,7 +46,7 @@
 				</VBox>
 				<VBox justifyContent="Center" class="sapUiLargeMarginEnd">
 					<Label text="{i18n>label.niveles}"/>
-					<Text text="{= ${data>/coleccion/niveles}.length}" /> 
+					<Text text="{= ${data>/coleccion/niveles}.length}"/>
 					<!--<NumericContent value="{= ${data>/coleccion/niveles}.length}" scale="Niveles" withMargin="false"/>-->
 				</VBox>
 			</FlexBox>
@@ -110,16 +110,21 @@
 										<Toolbar>
 											<content>
 												<Title text="{= 'Articulos ('+ ${data>modulo/articulos}.length +')'}"/>
+												<ToolbarSpacer/>
+												<ToggleButton text="Mostrar fallidos" icon="sap-icon://filter" press=".onPressFiltrarFallidosArticulos" visible="{viewModel>/editMode}"/>
 											</content>
 										</Toolbar>
 									</headerToolbar>
 									<items>
-										<StandardListItem title="{data>Articulo}" description="{data>Descripcion}"
-											info="{parts: ['data>FechaInicio', 'data>FechaFin'], formatter: '.formatter.formatDateShowTwo'}"/>
+										<StandardListItem title="{data>Descripcion} ({data>Articulo})"
+											infoState="{parts: ['data>Articulo', 'viewModel>/errores'], formatter: '.formatter.showInfoStateError'}"
+											info="{parts: ['data>Articulo', 'viewModel>/errores'], formatter: '.formatter.showInfoError'}"
+											description="{parts: ['data>FechaInicio', 'data>FechaFin'], formatter: '.formatter.formatDateShowTwo'}"
+											type="{= ${viewModel>/displayMode}? 'Inactive': 'Active' }" press=".onPressItemArticulo"/>
 									</items>
 								</List>
 							</VBox>
-							<VBox width="50%" class="">
+							<VBox width="50%">
 								<HBox width="100%" class="sapUiMediumMarginTop">
 									<VBox class="sapUiSmallMarginBeginEnd">
 										<Label text="Surtido" design="Bold"/>
@@ -147,19 +152,23 @@
 										<Toolbar>
 											<content>
 												<Title text="{= 'Tiendas ('+ ${data>surtido/tiendas}.length +')'}"/>
+												<ToolbarSpacer/>
+												<ToggleButton text="Mostrar fallidos" icon="sap-icon://filter" press=".onPressFiltrarFallidosTiendas" visible="{viewModel>/editMode}" />
 											</content>
 										</Toolbar>
 									</headerToolbar>
 									<items>
-										<StandardListItem title="{data>Tienda}"
-											description="{parts: ['data>FechaInicio', 'data>FechaFin'], formatter: '.formatter.formatDateShowTwo'}"/>
+										<StandardListItem title="{parts: ['data>Tienda', 'tiendasObj>/'], formatter: '.formatTiendaDescripcion'}"
+											description="{parts: ['data>FechaInicio', 'data>FechaFin'], formatter: '.formatter.formatDateShowTwo'}" press=".onPressItemTienda"
+											type="{= ${viewModel>/displayMode}? 'Inactive': 'Active' }"/>
 									</items>
 								</List>
 							</VBox>
 						</HBox>
 					</uxap:blocks>
 				</uxap:ObjectPageSubSection>
-				<!--<uxap:ObjectPageSubSection title="Surtido">-->
+				<!--<uxap:ObjectPageSubSection title="
+											Surtido">-->
 				<!--	<uxap:blocks>-->
 				<!--	</uxap:blocks>-->
 				<!--</uxap:ObjectPageSubSection>-->
@@ -167,6 +176,9 @@
 		</uxap:sections>
 		<uxap:footer>
 			<Bar>
+				<contentLeft>
+					<Button text="Errores" icon="sap-icon://message-popup" type="{= ${viewModel>/errores}.length === 0? 'Transparent': 'Emphasized'}" press=".onPressAbrirErroresGenerales"/>
+				</contentLeft>
 				<contentRight>
 					<Button text="Enviar" icon="sap-icon://paper-plane" press="onPressEnviar" type="Emphasized"/>
 				</contentRight>

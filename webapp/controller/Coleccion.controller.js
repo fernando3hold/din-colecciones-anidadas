@@ -14,10 +14,27 @@ sap.ui.define([
 		 * @memberOf dinosol.din-colecciones-anidadas.view.Coleccion
 		 */
 		onInit: function () {
-
+			
+			this._oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+			this._oRouter.getTarget("Coleccion").attachDisplay(function (oEvt) {
+				this._onDisplay();
+			}, this);
+		},
+		
+		_onDisplay : function(){
+			
 			this.getView().setModel(new sap.ui.model.json.JSONModel({
 				"editMode": false,
-				"displayMode": true
+				"displayMode": true,
+				"errores": [{
+					"Message": "Articulo 1040494 está mal",
+					"Type": "E"
+				},
+				{
+					"Message": "Modulo maligno",
+					"Type": "E",
+					"Modulo": "12345"
+				}]
 			}), "viewModel");
 		},
 
@@ -67,14 +84,13 @@ sap.ui.define([
 			var iAuxLevel = iLevel ? iLevel - 1 : this.getCurrentNivel() - 1;
 			return this.setComponentModelProperty("data", "/coleccion/niveles/" + iAuxLevel + "/modulo/articulos", aArticulos);
 		},
-		
 
 		getTiendasInLevel: function (iLevel) {
 
 			var iAuxLevel = iLevel ? iLevel - 1 : this.getCurrentNivel() - 1;
 			return this.getComponentModelProperty("data", "/coleccion/niveles/" + iAuxLevel + "/surtido/tiendas");
 		},
-		
+
 		setTiendasInLevel: function (iLevel, aTiendas) {
 
 			var iAuxLevel = iLevel ? iLevel - 1 : this.getCurrentNivel() - 1;
@@ -116,21 +132,51 @@ sap.ui.define([
 		},
 
 		onPressEnviar: function () {
-
-			var oColeccion = this.getComponentModelProperty("data", "/originalColeccion");
+			
+			var oColeccion = this.getComponentModelProperty("data", "/originalColeccion") || {"toReturn": []};
 			var sColeccion = this.getComponentModelProperty("data", "/coleccion/id");
+			
+			oColeccion.toNiveles = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
+				var oNiv= {};
+				jQuery.extend(true, oNiv, oNivel);
+				delete oNiv.modulo;
+				delete oNiv.surtido;
+				return oNiv;
+			}).flat();
+			
+			oColeccion.toModuloHeader = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
+				var oMod= {};
+				jQuery.extend(true, oMod, oNivel.modulo);
+				delete oMod.articulos;
+				return oMod;
+			}).flat();
+			
 			oColeccion.toModuloItems = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
 				return oNivel.modulo.articulos;
-			});
+			}).flat();
+			
+			oColeccion.toSurtidoHeader = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
+				var oSur= {};
+				jQuery.extend(true, oSur, oNivel.surtido);
+				delete oSur.tiendas;
+				return oSur;
+			}).flat();
 			oColeccion.toSurtidoItems = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
 				return oNivel.surtido.tiendas;
-			});
-
-			this.getComponentModel().create("/ColeccionSet('" + sColeccion + "')", oColeccion, {
+			}).flat();
+			
+			console.log(oColeccion);
+			var that = this;
+			sap.ui.core.BusyIndicator.show(0);
+			this.getComponentModel().create("/ColeccionSet", oColeccion, {
 				success: function (oData) {
-
+					that.getView().getModel("viewModel").setProperty('/errores', oData.toReturn? oData.toReturn.results : []);
+					
+					sap.ui.core.BusyIndicator.hide();
 				},
 				error: function (oData) {
+					sap.ui.core.BusyIndicator.hide();
+					return sap.m.MessageToast.show("Ha fallado el envío");
 				}
 			});
 		},
@@ -151,7 +197,7 @@ sap.ui.define([
 		 * 
 		 * 
 		 */
-		 onPressAddTienda: function (oEvent) {
+		onPressAddTienda: function (oEvent) {
 			if (!this.getView().addTiendaDialog) {
 				this.getView().addTiendaDialog = sap.ui.xmlfragment("addTiendaDialog",
 					"dinosol.din-colecciones-anidadas.fragment.DialogNuevaTienda", this);
@@ -173,7 +219,7 @@ sap.ui.define([
 			}));
 			this.getView().addTiendaDialog.open();
 		},
-		
+
 		onChangeTienda: function (oEvent) {
 
 			var oTienda = this.getView().getModel("tiendas").getProperty("/").find(function (element) {
@@ -183,11 +229,11 @@ sap.ui.define([
 
 			this.getView().addTiendaDialog.getModel("newTienda").setProperty("/Descripcion", oTienda.Descripcion);
 		},
-		
+
 		onPressAñadirTienda: function (oEvent) {
-			
+
 			var oNewTienda = this.getView().addTiendaDialog.getModel("newTienda").getProperty("/");
-			
+
 			if (this.getCurrentNivel() !== null && this.getCurrentNivel() !== undefined) {
 				aItemsNivel = this.getTiendasInLevel();
 				var oNewTiendaToSet = {
@@ -202,14 +248,13 @@ sap.ui.define([
 			}
 			this.getView().addTiendaDialog.close();
 		},
-		
+
 		onPressCancelarAñadirTienda: function () {
 			if (this.getView().addTiendaDialog) {
 				this.getView().addTiendaDialog.close();
 			}
 		},
-		
-		
+
 		onPressAddArticulo: function (oEvent) {
 			if (!this.getView().addArticuloDialog) {
 				this.getView().addArticuloDialog = sap.ui.xmlfragment("addArticuloDialog",
@@ -305,7 +350,7 @@ sap.ui.define([
 			this.getOwnerComponent().getModel().attachEventOnce("batchRequestCompleted", function (oEvent) {
 				sap.ui.core.BusyIndicator.hide();
 			});
-			var iAuxNivel = sNivel || this.getCurrentNivel() -1;
+			var iAuxNivel = sNivel || this.getCurrentNivel() - 1;
 
 			this.getArticulosInLevel(iAuxNivel).forEach(function (oLinea) {
 
@@ -333,19 +378,27 @@ sap.ui.define([
 		fillDescripcionArticulos: function (sArticulo, sNivel, oDataArticulo) {
 			var aItems = this.getArticulosInLevel(),
 				sAuxArticulo = oDataArticulo;
-			aItems.forEach(function(oItem){
+			aItems.forEach(function (oItem) {
 				if (oItem.Articulo === sAuxArticulo.Articulo) {
 					oItem.Descripcion = sAuxArticulo.Descripcion;
 				}
 			});
 			// this.oModel.setProperty("/items/" + sNivel, aItems);
-			this.setArticulosInLevel(/* iLevel */ undefined, aItems)
+			this.setArticulosInLevel( /* iLevel */ undefined, aItems)
 		},
-		
-		onPressBorrar : function(){
-			
-			this.onPressBorrarArticulo();
-			this.onPressBorrarTienda();
+
+		onPressBorrar: function () {
+
+			if (this.getModuloTable().getSelectedContexts().length > 0 || this.getSurtidoTable().getSelectedContexts() > 0) {
+				if (this.getModuloTable().getSelectedContexts().length > 0) {
+					this.onPressBorrarArticulo();
+				}
+				if (this.getSurtidoTable().getSelectedContexts().length > 0) {
+					this.onPressBorrarTienda();
+				}
+			} else {
+				return sap.m.MessageToast.show("Seleccione alguna línea");
+			}
 		},
 
 		onPressBorrarArticulo: function (oEvent) {
@@ -365,7 +418,7 @@ sap.ui.define([
 			this.setArticulosInLevel( /* iLevel */ undefined, aArticulosOrigen);
 			// this.getComponentModel("data").updateBindings(true);
 		},
-		
+
 		onPressBorrarTienda: function (oEvent) {
 
 			var aListaTiendasBorrar = this.getSurtidoTable().getSelectedContexts().map(function (oContext) {
@@ -419,7 +472,7 @@ sap.ui.define([
 		},
 
 		moverArticulos: function (oEvent) {
-			
+
 			// Articulos
 			var aListaArticulosMover = this.getModuloTable().getSelectedContexts().map(function (oContext) {
 					return oContext.getProperty("Articulo");
@@ -427,7 +480,7 @@ sap.ui.define([
 				aArticulosMover = this.getModuloTable().getSelectedContexts().map(function (oContext) {
 					return oContext.getObject();
 				});
-				
+
 			// Tiendas
 			var aListaTiendasMover = this.getSurtidoTable().getSelectedContexts().map(function (oContext) {
 					return oContext.getProperty("Tienda");
@@ -435,7 +488,7 @@ sap.ui.define([
 				aTiendasMover = this.getSurtidoTable().getSelectedContexts().map(function (oContext) {
 					return oContext.getObject();
 				});
-				
+
 			var iNivelOrigen = this.getCurrentNivel(),
 				iNivelSelected = oEvent.getParameter("selectedItem").getBindingContext("data").getProperty("NumNivel");
 			var aArticulosOrigen = this.getArticulosInLevel(iNivelOrigen),
@@ -458,14 +511,13 @@ sap.ui.define([
 			this.setArticulosInLevel(iNivelSelected, aArticulosSelected);
 			aTiendasSelected = aTiendasSelected.concat(aTiendasMover);
 			this.setTiendasInLevel(iNivelSelected, aTiendasSelected);
-			
+
 			this.getComponentModel("data").updateBindings(true);
-			this.getModuloTable().removeSelections(true); 
+			this.getModuloTable().removeSelections(true);
 			this.getSurtidoTable().removeSelections(true);
 			sap.m.MessageToast.show("Los artículos y tiendas han sido movidos");
 		},
-		
-		
+
 		onPressSubirMasiva: function (oEvent) {
 
 			if (!this.getView().cargaMasivaDialog) {
@@ -500,7 +552,7 @@ sap.ui.define([
 			}
 			return undefined;
 		},
-		
+
 		readArchivo: function () {
 
 			var f = this.getUploaderFiles();
@@ -529,9 +581,9 @@ sap.ui.define([
 		upperCaseAllData: function (sText) {
 			return sText;
 		},
-		
+
 		readData: function (oData) {
-			
+
 			var sSheet = oData.SheetNames[0];
 			var aNewData = this.upperCaseAllData(XLSX.utils.sheet_to_json(oData.Sheets[sSheet]));
 			var bAllGood = true,
@@ -586,7 +638,7 @@ sap.ui.define([
 					this.getDescripcionArticulos(this.getCurrentNivel() - 1);
 				}
 				break;
-				
+
 			case "Tiendas":
 
 				oFieldRelation = this.getComponentModel("textfieldTienda").getProperty("/");
@@ -629,7 +681,7 @@ sap.ui.define([
 				}
 				if (bAllGood && bFechaFinVacio === false) {
 					// this.removeAndPush(aNewData, "/surtidos/" + oCargaMasivaModel.Nivel, oCargaMasivaModel.Nivel, false);
-					
+
 					var aTiendas = this.getTiendasInLevel();
 					aTiendas = aArticulos.concat(aNewData);
 					this.setTiendasInLevel( /* iLevel */ undefined, aTiendas);
@@ -667,12 +719,199 @@ sap.ui.define([
 			}
 			return undefined;
 		},
-		
+
 		getTodayDateToSend: function () {
 
 			var sMonth = new Date().getMonth() < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1);
 			var sDay = new Date().getDate() < 10 ? "0" + (new Date().getDate()) : (new Date().getDate());
 			return new Date().getFullYear() + "" + sMonth + "" + sDay;
+		},
+
+		formatTiendaDescripcion: function (sTienda, oTiendas) {
+
+			return sTienda +" - "+ (oTiendas[sTienda] || "") || "";
+		},
+
+		onPressItemArticulo: function (oEvent) {
+
+			var sBinding = oEvent.getSource().getBindingContext("data").getPath();
+			this.onPressEditarArticulo(sBinding);
+		},
+
+		onPressEditarArticulo: function (sBinding) {
+			if (!this.getView().editarArticuloDialog) {
+				this.getView().editarArticuloDialog = sap.ui.xmlfragment("editarArticuloDialog",
+					"dinosol.din-colecciones-anidadas.fragment.DialogEditarArticulo", this);
+				this.getView().addDependent(this.getView().editarArticuloDialog);
+			}
+			var oArticulo = this.getComponentModelProperty("data", sBinding);
+
+			var oNew = {
+				"Articulo": oArticulo.Articulo,
+				"Descripcion": oArticulo.Descripcion,
+				"NoAnidar": oArticulo.NoAnidar,
+				"FechaInicio": oArticulo.FechaInicio,
+				"FechaFin": oArticulo.FechaFin //this.oModel.getProperty("/seleccionado/fechaFin")
+			};
+
+			this.getView().editarArticuloDialog.setModel(new sap.ui.model.json.JSONModel(oNew), "editArticulo");
+			this.getView().editarArticuloDialog.removeAllCustomData();
+			this.getView().editarArticuloDialog.addCustomData(new sap.ui.core.CustomData({
+				key: "binding",
+				value: sBinding
+			}));
+			this.getView().editarArticuloDialog.open();
+		},
+
+		onPressConfirmarEditarArticulo: function (oEvent) {
+			var aItemsNivel = [];
+			var oNewArticulo = this.getView().editarArticuloDialog.getModel("editArticulo").getProperty("/");
+			var sBinding = this.getView().editarArticuloDialog.getCustomData()[0].getValue();
+
+			this.setComponentModelProperty("data", sBinding, oNewArticulo);
+
+			this.getDescripcionArticulos(this.getCurrentNivel());
+			this.getView().editarArticuloDialog.close();
+		},
+
+		onPressCancelarEditar: function () {
+			this.getView().editarArticuloDialog.close();
+		},
+
+		onPressItemTienda: function (oEvent) {
+
+			var sBinding = oEvent.getSource().getBindingContext("data").getPath();
+			this.onPressEditarTienda(sBinding);
+		},
+
+		onPressEditarTienda: function (sBinding) {
+			if (!this.getView().editarTiendaDialog) {
+				this.getView().editarTiendaDialog = sap.ui.xmlfragment("editarTiendaDialog",
+					"dinosol.din-colecciones-anidadas.fragment.DialogEditarTienda", this);
+				this.getView().addDependent(this.getView().editarTiendaDialog);
+			}
+
+			var oTienda = this.getComponentModelProperty("data", sBinding);
+
+			var oNew = {
+				"Tienda": oTienda.Tienda,
+				"Descripcion": oTienda.Descripcion,
+				"FechaInicio": oTienda.FechaInicio,
+				"FechaFin": oTienda.FechaFin //this.oModel.getProperty("/seleccionado/fechaFin")
+			};
+
+			this.getView().editarTiendaDialog.setModel(new sap.ui.model.json.JSONModel(oNew), "editTienda");
+			this.getView().editarTiendaDialog.removeAllCustomData();
+			this.getView().editarTiendaDialog.addCustomData(new sap.ui.core.CustomData({
+				key: "binding",
+				value: sBinding
+			}));
+			this.getView().editarTiendaDialog.open();
+		},
+
+		onChangeTienda: function (oEvent) {
+
+			var oTienda = this.getComponentModelProperty("tiendas", "/").find(function (element) {
+				return element.Tienda === oEvent.getParameter("selectedItem").getProperty(
+					"key");
+			});
+
+			this.getView().editarTiendaDialog.getModel("editTienda").setProperty("/Descripcion", oTienda.Descripcion);
+		},
+
+		onPressConfirmEditarTienda: function (oEvent) {
+
+			var oNewTienda = this.getView().editarTiendaDialog.getModel("editTienda").getProperty("/");
+			var sBinding = this.getView().editarTiendaDialog.getCustomData()[0].getValue();
+
+			this.setComponentModelProperty("data", sBinding, oNewTienda);
+			this.getView().editarTiendaDialog.close();
+		},
+
+		onPressCancelarEditarTienda: function () {
+			if (this.getView().editarTiendaDialog) {
+				this.getView().editarTiendaDialog.close();
+			}
+		},
+		
+		onPressAbrirErroresGenerales: function (oEvent) {
+
+			// var aErroresModulo = this.getView().getModel().getProperty("/returnModulo");
+			// var aModulo = aErroresModulo.filter(function (oError) {
+			// 	// Trapi Fer para nataly
+			// 	return (oError.Modulo !== "" || oError.Message.indexOf("Módulo") >= 0 || oError.Message.indexOf("módulo") >= 0) && oError.Message.indexOf("Artículo") < 0 && oError.Message.indexOf("X") < 0;
+			// }, this);
+			// var aErroresSurtido = this.getView().getModel().getProperty("/returnSurtido");
+			// var aSurtido = aErroresSurtido.filter(function (oError) {
+			// 	// Trapi Fer para nataly
+			// 	return (oError.Message.indexOf("Surtido") >= 0 || oError.Message.indexOf("surtido") >= 0) && oError.Message.indexOf("Tienda") < 0 && oError.Message.indexOf("X") < 0;
+			// }, this);
+
+			// var aFinal = aModulo.concat(aSurtido);
+			
+			var aFinal = this.getView().getModel("viewModel").getProperty("/errores");
+			if (!this.getView()._errorsDialog) {
+				this.getView()._errorsDialog = new sap.m.MessagePopover({
+					groupItems: true
+				});
+			}
+			this.getView().addDependent(this.getView()._errorsDialog);
+
+			this.getView()._errorsDialog.removeAllItems();
+			aFinal.forEach(function (oError) {
+				this.getView()._errorsDialog.addItem(new sap.m.MessageItem({
+					title: oError.Message,
+					subtitle: oError.Modulo !== ""? oError.Modulo : oError.Surtido,
+					type: oError.Type === "S" ? "Success" : "Error"
+				}));
+			}, this);
+			this.getView()._errorsDialog.openBy(oEvent.getSource());
+		},
+		
+		onPressFiltrarFallidosArticulos : function(oEvent){
+			
+			
+			var oTable = this.getModuloTable();
+			oTable.getBinding("items").filter(undefined);
+			var that = this;
+			if (oEvent.getParameter("pressed")) {
+				oTable.getBinding("items").filter([new sap.ui.model.Filter({
+					path: "Articulo",
+					test: function (sArticulo) {
+						var aErrors = this.getView().getModel("viewModel").getProperty("/errores");
+						if (aErrors.length === 0) {
+							return false;
+						}
+						var bError = aErrors.some(function (oError) {
+							return oError.Message.indexOf(sArticulo) >= 0 && oError.Type === "E";
+						}, this);
+						return bError;
+					}.bind(that)
+				})]);
+			}
+		},
+		
+		onPressFiltrarFallidosTiendas : function(oEvent){
+			
+			
+			var oTable = this.getSurtidoTable();
+			oTable.getBinding("items").filter(undefined);
+			var that = this;
+			if (oEvent.getParameter("pressed")) {
+				oTable.getBinding("items").filter([new sap.ui.model.Filter({
+					path: "Tienda",
+					test: function (sArticulo) {
+						var aErrors = this.getView().getModel("viewModel").getProperty("/errores");
+						if (aErrors.length === 0) {
+							return false;
+						}
+						var bError = aErrors.some(function (oError) {
+							return oError.Message.indexOf(sArticulo) >= 0 && oError.Type === "E";
+						}, this);
+						return bError;
+					}.bind(that)
+				})]);
+			}
 		}
 
 		/**

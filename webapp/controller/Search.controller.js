@@ -41,7 +41,9 @@ sap.ui.define([
 		onPressBuscar: function () {
 
 			var that = this;
-			var sColeccion = this.getView().getModel("search").getProperty("/Coleccion");
+			var sColeccion = this.getView().getModel("search").getProperty("/Coleccion"),
+				sNivel = this.getView().getModel("search").getProperty("/Nivel"),
+				bAnidado = this.getView().getModel("search").getProperty("/Anidado");
 			var oFinalData = {
 				"id": "Prueba",
 				"niveles": [{
@@ -56,7 +58,7 @@ sap.ui.define([
 							"Articulo": "1040494",
 							"Descripcion": "Articulo 1",
 							"FechaInicio": "20200921",
-							"FechaFin": "99991131"
+							"FechaFin": "99991231"
 						}]
 					},
 					"surtido": {
@@ -107,13 +109,24 @@ sap.ui.define([
 			return;
 			sap.ui.core.BusyIndicator.show(0);
 			this.getComponentModel().read("/ColeccionSet('" + sColeccion + "')", {
+				// filters: [
+				// 	new sap.ui.model.Filter({
+				// 		path: "Nivel",
+				// 		operator: "EQ",
+				// 		value1: sNivel
+				// 	}),
+				// 	new sap.ui.model.Filter({
+				// 		path: "Anidado",
+				// 		operator: "EQ",
+				// 		value1: bAnidado
+				// 	}),
+				// ],
 				urlParameters: {
 					"$expand": ["toNiveles", "toModuloHeader", "toModuloItems", "toSurtidoHeader", "toSurtidoItems"]
 				},
 				success: function (oData) {
 
 					sap.ui.core.BusyIndicator.hide();
-					
 					var oFinalData = that.adjustDataOnRetrieval(sColeccion, oData);
 					that.setComponentModelProperty("data", "/coleccion", oFinalData);
 					that.setComponentModelProperty("data", "/originalColeccion", oData);
@@ -150,7 +163,6 @@ sap.ui.define([
 					oNivel["modulo"] = aModulo[0];
 					oNivel["modulo"]["articulos"] = oData.toModuloItems.results;
 				}
-
 				// Añadimos el surtido
 				var aSurtido = oData.toSurtidoHeader.results.filter(function (oSurtido) {
 					return sNivel === oSurtido.Nivel;
@@ -344,12 +356,17 @@ sap.ui.define([
 			this.toggleOpenSH();
 			document.removeEventListener("keypress", this.onKeyPressColeccionSH);
 		},
-		
+
 		loadTiendas: function () {
 			var that = this;
 			this.getComponentModel().read("/MCTiendaSet", {
 				success: function (oData) {
 					that.getComponentModel("tiendas").setProperty("/", oData.results);
+					var oTiendaObj = {};
+					oData.results.forEach(function(oTienda){
+						oTiendaObj[oTienda.Tienda] = oTienda.Descripcion;
+					}, that);
+					that.getComponentModel("tiendasObj").setProperty("/", oTiendaObj);
 				},
 				error: function (oError) {
 					var oErrorModel = new sap.ui.model.json.JSONModel();

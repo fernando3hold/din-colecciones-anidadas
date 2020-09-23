@@ -79,6 +79,9 @@
 			"tiendas": {
 				"type": "sap.ui.model.json.JSONModel"
 			},
+			"tiendasObj": {
+				"type": "sap.ui.model.json.JSONModel"
+			},
 			"textfieldArticulo": {
 				"type": "sap.ui.model.json.JSONModel",
 				"uri": "model/textfieldArticulo.json"
