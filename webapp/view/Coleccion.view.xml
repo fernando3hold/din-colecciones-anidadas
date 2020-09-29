@@ -98,7 +98,7 @@
 										<!--  visible="{viewModel>/displayMode}" -->
 										<!--<DatePicker value="{data>modulo/FechaInicio}" visible="{viewModel>/editMode}" width="200px"/>-->
 									</VBox>
-									<VBox class="sapUiSmallMarginBeginEnd">
+									<VBox class="sapUiTinyMarginBeginEnd">
 										<Label text="Fecha fin" design="Bold"/>
 										<Text text="{path: 'data>modulo/FechaFin', formatter: '.formatter.formatDateShow'}"/>
 										<!--  visible="{viewModel>/displayMode}" -->
@@ -140,7 +140,7 @@
 										<!--  visible="{viewModel>/displayMode}" -->
 										<!--<DatePicker value="{data>surtido/FechaInicio}" visible="{viewModel>/editMode}" width="200px"/>-->
 									</VBox>
-									<VBox class="sapUiSmallMarginBeginEnd">
+									<VBox class="sapUiTinyMarginBeginEnd">
 										<Label text="Fecha fin" design="Bold"/>
 										<Text text="{path: 'data>surtido/FechaFin', formatter: '.formatter.formatDateShow'}"/>
 										<!--  visible="{viewModel>/displayMode}" -->
