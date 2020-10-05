@@ -5,9 +5,42 @@ sap.ui.define([
 		"use strict";
 		return {
 
-			showInfoError: function (sArticulo, aErrores) {
+			formatEnabledEditFechaInicio: function (sInicio) {
+
+				var fnToDate = function (sDate) {
+					var sDay = sDate.substring(6, 8),
+						sMonth = sDate.substring(4, 6),
+						sYear = sDate.substring(0, 4);
+					return new Date(sYear, sMonth - 1, sDay).setHours(0,0,0);
+				};
 				
-				if(!aErrores){
+				if(fnToDate(sInicio) >= new Date().getTime()){
+					return true;
+				} else {
+					return false;
+				}
+
+			},
+			formatEnabledEditFechaFin: function (sFin) {
+
+				var fnToDate = function (sDate) {
+					var sDay = sDate.substring(6, 8),
+						sMonth = sDate.substring(4, 6),
+						sYear = sDate.substring(0, 4);
+					return new Date(sYear, sMonth - 1, sDay).setHours(0,0,0);
+				};
+				
+				if(fnToDate(sFin) >= new Date().getTime()){
+					return true;
+				} else {
+					return false;
+				}
+
+			},
+
+			showInfoError: function (sArticulo, aErrores) {
+
+				if (!aErrores) {
 					return "";
 				}
 				if (aErrores.length === 0) {
@@ -22,10 +55,10 @@ sap.ui.define([
 				}
 				return aMyErrors[0].Message;
 			},
-			
+
 			showInfoStateError: function (sArticulo, aErrores) {
-				
-				if(!aErrores){
+
+				if (!aErrores) {
 					return "Success";
 				}
 				if (aErrores.length === 0) {
@@ -40,10 +73,10 @@ sap.ui.define([
 				}
 				var bError = aMyErrors[0].Type === "E";
 				var bWarning = aMyErrors[0].Type === "W";
-				if(bError){
+				if (bError) {
 					return "Error";
 				}
-				if(bWarning){
+				if (bWarning) {
 					return "Warning";
 				}
 			},

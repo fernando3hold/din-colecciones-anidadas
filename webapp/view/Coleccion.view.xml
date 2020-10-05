@@ -116,9 +116,9 @@
 										</Toolbar>
 									</headerToolbar>
 									<items>
-										<StandardListItem title="{data>Descripcion} ({data>Articulo})"
-											infoState="{parts: ['data>Articulo', 'viewModel>/errores'], formatter: '.formatter.showInfoStateError'}"
-											info="{parts: ['data>Articulo', 'viewModel>/errores'], formatter: '.formatter.showInfoError'}"
+										<!-- {parts: ['data>Articulo', 'viewModel>/errores'], formatter: '.formatter.showInfoStateError'} -->
+										<StandardListItem title="{data>Descripcion} ({data>Articulo})" infoState="{data>TipoError}" info="{data>Error}"
+											highlight="{= ${data>Error}? 'Error' : 'None' }"
 											description="{parts: ['data>FechaInicio', 'data>FechaFin'], formatter: '.formatter.formatDateShowTwo'}"
 											type="{= ${viewModel>/displayMode}? 'Inactive': 'Active' }" press=".onPressItemArticulo"/>
 									</items>
@@ -153,7 +153,7 @@
 											<content>
 												<Title text="{= 'Tiendas ('+ ${data>surtido/tiendas}.length +')'}"/>
 												<ToolbarSpacer/>
-												<ToggleButton text="Mostrar fallidos" icon="sap-icon://filter" press=".onPressFiltrarFallidosTiendas" visible="{viewModel>/editMode}" />
+												<ToggleButton text="Mostrar fallidos" icon="sap-icon://filter" press=".onPressFiltrarFallidosTiendas" visible="{viewModel>/editMode}"/>
 											</content>
 										</Toolbar>
 									</headerToolbar>
@@ -167,17 +167,14 @@
 						</HBox>
 					</uxap:blocks>
 				</uxap:ObjectPageSubSection>
-				<!--<uxap:ObjectPageSubSection title="
-											Surtido">-->
-				<!--	<uxap:blocks>-->
-				<!--	</uxap:blocks>-->
-				<!--</uxap:ObjectPageSubSection>-->
 			</uxap:ObjectPageSection>
 		</uxap:sections>
 		<uxap:footer>
 			<Bar>
 				<contentLeft>
-					<Button text="Errores" icon="sap-icon://message-popup" type="{= ${viewModel>/errores}.length === 0? 'Transparent': 'Emphasized'}" press=".onPressAbrirErroresGenerales"/>
+					<Button text="Errores" icon="sap-icon://message-popup"
+						type="{parts: ['viewModel>/erroresModulo','viewModel>/erroresSurtido'], formatter: '.formatTypeErroresGenerales'}"
+						press=".onPressAbrirErroresGenerales"/>
 				</contentLeft>
 				<contentRight>
 					<Button text="Enviar" icon="sap-icon://paper-plane" press="onPressEnviar" type="Emphasized"/>

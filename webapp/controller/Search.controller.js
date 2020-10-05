@@ -16,7 +16,7 @@ sap.ui.define([
 		onInit: function () {
 
 			this.getView().setModel(new sap.ui.model.json.JSONModel({
-				"Coleccion": "JMS21",
+				"Coleccion": "",
 				"Nivel": "",
 				"Anidado": false
 			}), "search");
@@ -103,31 +103,27 @@ sap.ui.define([
 				}]
 			};
 			that.setComponentModelProperty("data", "/coleccion", oFinalData);
-			that.getComponentModel("data").updateBindings(true);
-			that.onPressCerrarDialog();
-			that.getOwnerComponent().getRouter().getTargets().display("Coleccion");
-			return;
+			that.setComponentModelProperty("data", "/anidado", bAnidado);
+			// that.getComponentModel("data").updateBindings(true);
+			// that.onPressCerrarDialog();
+			// that.getOwnerComponent().getRouter().getTargets().display("Coleccion");
+			// return;
 			sap.ui.core.BusyIndicator.show(0);
-			this.getComponentModel().read("/ColeccionSet('" + sColeccion + "')", {
-				// filters: [
-				// 	new sap.ui.model.Filter({
-				// 		path: "Nivel",
-				// 		operator: "EQ",
-				// 		value1: sNivel
-				// 	}),
-				// 	new sap.ui.model.Filter({
-				// 		path: "Anidado",
-				// 		operator: "EQ",
-				// 		value1: bAnidado
-				// 	}),
-				// ],
+			var sSoloOrigen = bAnidado ? "X" : "";
+			this.getComponentModel().read("/ColeccionSet(Id='" + sColeccion + "',SoloOrigen='" + sSoloOrigen + "')", {
 				urlParameters: {
 					"$expand": ["toNiveles", "toModuloHeader", "toModuloItems", "toSurtidoHeader", "toSurtidoItems"]
 				},
 				success: function (oData) {
 
 					sap.ui.core.BusyIndicator.hide();
+					if (oData.toNiveles.results.length === 0) {
+						return sap.m.MessageToast.show("No se ha recuperado ninguna colección");
+					}
 					var oFinalData = that.adjustDataOnRetrieval(sColeccion, oData);
+					if (!oFinalData) {
+						return sap.m.MessageToast.show("La colección tiene una estructura no identificada");
+					}
 					that.setComponentModelProperty("data", "/coleccion", oFinalData);
 					that.setComponentModelProperty("data", "/originalColeccion", oData);
 					that.getComponentModel("data").updateBindings(true);
@@ -150,7 +146,7 @@ sap.ui.define([
 
 		adjustDataOnRetrieval: function (sColeccion, oData) {
 
-			var bDosModulos = false;
+			var bError = false;
 			var aNiveles = oData.toNiveles.results.map(function (oNivel) {
 				var sNivel = oNivel.NumNivel;
 
@@ -158,24 +154,42 @@ sap.ui.define([
 				var aModulo = oData.toModuloHeader.results.filter(function (oModulo) {
 					return sNivel === oModulo.Nivel;
 				}, this);
-				bDosModulos = aModulo.length > 1;
-				if (aModulo.length == 1) {
+				if(!bError){
+					bError = aModulo.length > 1 || aModulo.length === 0;
+				}
+				if (aModulo.length === 1) {
 					oNivel["modulo"] = aModulo[0];
-					oNivel["modulo"]["articulos"] = oData.toModuloItems.results;
+					var sModulo = oNivel.modulo.Modulo;
+					oNivel["modulo"]["articulos"] = oData.toModuloItems.results.filter(function(oArticulo){
+						return oArticulo.Modulo === sModulo;
+					}, this).map(function (oArticulo) {
+						delete oArticulo.__metadata;
+						return oArticulo;
+					}, this);
 				}
 				// Añadimos el surtido
 				var aSurtido = oData.toSurtidoHeader.results.filter(function (oSurtido) {
 					return sNivel === oSurtido.Nivel;
 				}, this);
-				oNivel["surtido"] = aSurtido[0];
-				oNivel["surtido"]["tiendas"] = oData.toSurtidoItems.results;
-
+				if(!bError){
+					bError = aSurtido.length > 1 || aSurtido.length === 0;
+				}
+				if (aSurtido.length === 1) {
+					oNivel["surtido"] = aSurtido[0];
+					var sSurtido = oNivel.surtido.Surtido;
+					oNivel["surtido"]["tiendas"] = oData.toSurtidoItems.results.filter(function(oTienda){
+						return oTienda.Surtido === sSurtido;
+					}, this).map(function (oTienda) {
+						delete oTienda.__metadata;
+						return oTienda;
+					});
+				}
 				return oNivel;
 			}, this);
 			var oFinalData = {};
 			oFinalData["id"] = sColeccion;
 			oFinalData["niveles"] = aNiveles;
-			return bDosModulos ? undefined : oFinalData;
+			return bError ? undefined : oFinalData;
 		},
 
 		onChangeNivelSearch: function (oEvent) {
@@ -363,7 +377,7 @@ sap.ui.define([
 				success: function (oData) {
 					that.getComponentModel("tiendas").setProperty("/", oData.results);
 					var oTiendaObj = {};
-					oData.results.forEach(function(oTienda){
+					oData.results.forEach(function (oTienda) {
 						oTiendaObj[oTienda.Tienda] = oTienda.Descripcion;
 					}, that);
 					that.getComponentModel("tiendasObj").setProperty("/", oTiendaObj);

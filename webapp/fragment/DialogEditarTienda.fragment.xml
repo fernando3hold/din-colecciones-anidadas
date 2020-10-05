@@ -11,10 +11,12 @@
 			</Select>
 			<!-- FECHA INICIO -->
 			<Label text="{i18n>label.fechaInicio}"/>
-			<DatePicker id="inicio" value="{editTienda>/FechaInicio}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<DatePicker id="inicio" value="{editTienda>/FechaInicio}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"
+			enabled="{path: 'editTienda>/FechaInicio', formatter: '.formatter.formatEnabledEditFechaInicio'}"/>
 			<!-- FECHA FIN -->
 			<Label text="{i18n>label.fechaFin}"/>
-			<DatePicker id="fin" value="{editTienda>/FechaFin}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<DatePicker id="fin" value="{editTienda>/FechaFin}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"
+			enabled="{path: 'editTienda>/FechaFin', formatter: '.formatter.formatEnabledEditFechaFin'}"/>
 		</form:SimpleForm>
 		<beginButton>
 			<Button text="Guardar" press=".onPressConfirmEditarTienda"/>

@@ -14,27 +14,29 @@ sap.ui.define([
 		 * @memberOf dinosol.din-colecciones-anidadas.view.Coleccion
 		 */
 		onInit: function () {
-			
+
 			this._oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 			this._oRouter.getTarget("Coleccion").attachDisplay(function (oEvt) {
 				this._onDisplay();
 			}, this);
 		},
-		
-		_onDisplay : function(){
-			
+
+		_onDisplay: function () {
+
 			this.getView().setModel(new sap.ui.model.json.JSONModel({
 				"editMode": false,
 				"displayMode": true,
-				"errores": [{
-					"Message": "Articulo 1040494 está mal",
-					"Type": "E"
-				},
-				{
-					"Message": "Modulo maligno",
-					"Type": "E",
-					"Modulo": "12345"
-				}]
+				"anidado": this.getComponentModelProperty("data", "/anidado"),
+				"erroresModulo": [],
+				"erroresSurtido": []
+				// "errores": [{
+				// 	"Message": "Articulo 1040494 está mal",
+				// 	"Type": "E"
+				// }, {
+				// 	"Message": "Modulo maligno",
+				// 	"Type": "E",
+				// 	"Modulo": "12345"
+				// }]
 			}), "viewModel");
 		},
 
@@ -132,46 +134,77 @@ sap.ui.define([
 		},
 
 		onPressEnviar: function () {
-			
-			var oColeccion = this.getComponentModelProperty("data", "/originalColeccion") || {"toReturn": []};
-			var sColeccion = this.getComponentModelProperty("data", "/coleccion/id");
-			
-			oColeccion.toNiveles = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
-				var oNiv= {};
-				jQuery.extend(true, oNiv, oNivel);
-				delete oNiv.modulo;
-				delete oNiv.surtido;
-				return oNiv;
-			}).flat();
-			
-			oColeccion.toModuloHeader = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
-				var oMod= {};
-				jQuery.extend(true, oMod, oNivel.modulo);
-				delete oMod.articulos;
-				return oMod;
-			}).flat();
-			
+
+			// Llamada de creacion de carga masiva
+			// "Accion": sAccion,
+			// "toAsignacionItems": [],
+			// "toModuloItems": [],
+			// "toSurtidoItems": [],
+			// "toReturnAsignacion": [],
+			// "toReturnModulo": [],
+			// "toReturnSurtido": []
+			// this.getComponentModelProperty("data", "/originalColeccion") ||
+			var oColeccion = {
+				// "Id" : this.getComponentModelProperty("data", "/coleccion/id"),
+				"Accion": "C",
+				// "toReturn": [],
+				"toReturnModulo": [],
+				"toReturnSurtido": []
+			};
+			// oColeccion.toNiveles = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
+			// 	var oNiv= {};
+			// 	jQuery.extend(true, oNiv, oNivel);
+			// 	delete oNiv.modulo;
+			// 	delete oNiv.surtido;
+			// 	return oNiv;
+			// }).flat();
+
+			// oColeccion.toModuloHeader = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
+			// 	var oMod= {};
+			// 	jQuery.extend(true, oMod, oNivel.modulo);
+			// 	delete oMod.articulos;
+			// 	return oMod;
+			// }).flat();
+
 			oColeccion.toModuloItems = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
-				return oNivel.modulo.articulos;
+				return oNivel.modulo.articulos.map(function (oArticulo) {
+					var oArt = {};
+					jQuery.extend(true, oArt, oArticulo);
+					delete oArt.Nivel;
+					delete oArt.IndBorrado;
+					delete oArt.Descripcion;
+					delete oArt.TipoModificacion;
+					delete oArt.Error;
+					delete oArt.TipoError;
+					oArt.Borrar = false;
+					return oArt;
+				});
 			}).flat();
-			
-			oColeccion.toSurtidoHeader = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
-				var oSur= {};
-				jQuery.extend(true, oSur, oNivel.surtido);
-				delete oSur.tiendas;
-				return oSur;
-			}).flat();
+
+			// oColeccion.toSurtidoHeader = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
+			// 	var oSur= {};
+			// 	jQuery.extend(true, oSur, oNivel.surtido);
+			// 	delete oSur.tiendas;
+			// 	return oSur;
+			// }).flat();
+
 			oColeccion.toSurtidoItems = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
-				return oNivel.surtido.tiendas;
+				return oNivel.surtido.tiendas.map(function (oTienda) {
+					var oTi = {};
+					jQuery.extend(true, oTi, oTienda);
+					delete oTi.Nivel;
+					return oTi;
+				});
 			}).flat();
-			
+
 			console.log(oColeccion);
 			var that = this;
 			sap.ui.core.BusyIndicator.show(0);
-			this.getComponentModel().create("/ColeccionSet", oColeccion, {
+			this.getComponentModel().create("/EMColeccionSet", oColeccion, { // ColeccionSet
 				success: function (oData) {
-					that.getView().getModel("viewModel").setProperty('/errores', oData.toReturn? oData.toReturn.results : []);
-					
+					that.getView().getModel("viewModel").setProperty('/erroresModulo', oData.toReturnModulo ? oData.toReturnModulo.results : []);
+					that.getView().getModel("viewModel").setProperty('/erroresSurtido', oData.toReturnSurtido ? oData.toReturnSurtido.results : []);
+					that.setErrorOnItem(oData.toReturnModulo.results, oData.toReturnSurtido.results);
 					sap.ui.core.BusyIndicator.hide();
 				},
 				error: function (oData) {
@@ -179,6 +212,31 @@ sap.ui.define([
 					return sap.m.MessageToast.show("Ha fallado el envío");
 				}
 			});
+		},
+
+		setErrorOnItem: function (aErroresModulo, aErroresSurtido) {
+
+			var aEModulo = aErroresModulo,
+				aESurtido = aErroresSurtido;
+			var aNiveles = this.getComponentModelProperty("data", "/coleccion/niveles");
+			aNiveles.forEach(function (oNivel) {
+
+				oNivel.modulo.articulos.forEach(function (oArticulo) {
+
+					var sMatnr = oArticulo.Articulo,
+						sModulo = oArticulo.Modulo;
+					var aErrores = aEModulo.filter(function (oError) {
+						return oError.Modulo.indexOf(sModulo) >= 0 && oError.Message.indexOf(sMatnr) >= 0;
+					}, this);
+					if (aErrores.length > 0) {
+						oArticulo.Error = aErrores[0].Message;
+						oArticulo.TipoError = aErrores[0].Type === "E" ? "Error" : "Warning";
+					}
+				}, this);
+
+			}, this);
+			this.setComponentModelProperty("data", "/coleccion/niveles", aNiveles);
+			this.getComponentModel("data").updateBindings(true);
 		},
 
 		getDateToSearch: function (dDate) {
@@ -481,41 +539,68 @@ sap.ui.define([
 					return oContext.getObject();
 				});
 
-			// Tiendas
-			var aListaTiendasMover = this.getSurtidoTable().getSelectedContexts().map(function (oContext) {
-					return oContext.getProperty("Tienda");
-				}),
-				aTiendasMover = this.getSurtidoTable().getSelectedContexts().map(function (oContext) {
-					return oContext.getObject();
-				});
-
 			var iNivelOrigen = this.getCurrentNivel(),
 				iNivelSelected = oEvent.getParameter("selectedItem").getBindingContext("data").getProperty("NumNivel");
 			var aArticulosOrigen = this.getArticulosInLevel(iNivelOrigen),
-				aArticulosSelected = this.getArticulosInLevel(iNivelSelected),
-				aTiendasOrigen = this.getTiendasInLevel(iNivelOrigen),
-				aTiendasSelected = this.getTiendasInLevel(iNivelSelected);
+				aArticulosSelected = this.getArticulosInLevel(iNivelSelected);
+			var bSubir = iNivelSelected > iNivelOrigen,
+				bBajar = iNivelSelected < iNivelOrigen;
+
+			// Subir un artículo de nivel origen. Por ejemplo, se pasa del nivel origen del 1 al 5 →
+			// Se deberá enviar a SAP el artículo con fecha fin hoy para los niveles (módulos) 1, 2, 3, 4.
+			if (bSubir) {
+				var aArticuloInsert = aArticulosMover.map(function (oArticulo) {
+					oArticulo.FechaInicio = this.getTodayDateToSend();
+					return oArticulo;
+				}, this);
+				//Cambiamos las fechas en el actual y en los sucesivos excepto en el final
+				for (var iLevel = iNivelOrigen; iLevel < iNivelSelected; iLevel++) {
+					// Obtenemos los articulos del nivel actual
+					var aArticulosLevel = this.getArticulosInLevel(iLevel);
+					// Buscamos si hay alguno que esté en la lista de los articulos a subir
+					aArticulosLevel = aArticulosLevel.filter(function (oArticulo) {
+						return !aListaArticulosMover.includes(oArticulo.Articulo);
+					}, this);
+					aArticulosLevel = aArticulosLevel.concat(aArticuloInsert);
+					this.setArticulosInLevel(iLevel, aArticulosLevel);
+				}
+				// Lo añadimos en el nivel final
+				aArticulosSelected = aArticulosSelected.concat(aArticulosMover);
+				this.setArticulosInLevel(iNivelSelected, aArticulosSelected);
+			} else if (bBajar) {
+				// Bajar un artículo de nivel origen. Por ejemplo, se pasa del nivel origen del 5 al 1 →
+				// Se deberá enviar a SAP el artículo con fecha inicio hoy y fin 31.12.9999 para los niveles 1, 2, 3, 4. 	
+				var aArticuloInsert = aArticulosMover.map(function (oArticulo) {
+					oArticulo.FechaInicio = this.getTodayDateToSend();
+					oArticulo.FechaFin = "99991231";
+					return oArticulo;
+				}, this);
+				for (var iLevel = iNivelSelected; iLevel >= iNivelSelected; iLevel--) {
+
+					// Obtenemos los articulos del nivel actual
+					var aArticulosLevel = this.getArticulosInLevel(iLevel)
+						// Buscamos si hay alguno que esté en la lista de los articulos a bajar
+					aArticulosLevel = aArticulosLevel.filter(function (oArticulo) {
+						return !aListaArticulosMover.includes(oArticulo.Articulo);
+					}, this);
+					aArticulosLevel = aArticulosLevel.concat(aArticuloInsert);
+					this.setArticulosInLevel(iLevel, aArticulosLevel);
+				}
+			}
 
 			// Eliminamos articulos y tiendas del nivel actual
-			aArticulosOrigen = aArticulosOrigen.filter(function (oArticulo) {
-				return !aListaArticulosMover.includes(oArticulo.Articulo);
-			});
-			this.setArticulosInLevel(iNivelOrigen, aArticulosOrigen);
-			aTiendasOrigen = aTiendasOrigen.filter(function (oTienda) {
-				return !aListaTiendasMover.includes(oTienda.Tienda);
-			});
-			this.setTiendasInLevel(iNivelOrigen, aTiendasOrigen);
+			// aArticulosOrigen = aArticulosOrigen.filter(function (oArticulo) {
+			// 	return !aListaArticulosMover.includes(oArticulo.Articulo);
+			// });
+			// this.setArticulosInLevel(iNivelOrigen, aArticulosOrigen);
 
 			// Lo añadimos en el nivel seleccionado
-			aArticulosSelected = aArticulosSelected.concat(aArticulosMover);
-			this.setArticulosInLevel(iNivelSelected, aArticulosSelected);
-			aTiendasSelected = aTiendasSelected.concat(aTiendasMover);
-			this.setTiendasInLevel(iNivelSelected, aTiendasSelected);
+			// aArticulosSelected = aArticulosSelected.concat(aArticulosMover);
+			// this.setArticulosInLevel(iNivelSelected, aArticulosSelected);
 
 			this.getComponentModel("data").updateBindings(true);
 			this.getModuloTable().removeSelections(true);
-			this.getSurtidoTable().removeSelections(true);
-			sap.m.MessageToast.show("Los artículos y tiendas han sido movidos");
+			sap.m.MessageToast.show("Los artículos han sido movidos");
 		},
 
 		onPressSubirMasiva: function (oEvent) {
@@ -729,7 +814,7 @@ sap.ui.define([
 
 		formatTiendaDescripcion: function (sTienda, oTiendas) {
 
-			return sTienda +" - "+ (oTiendas[sTienda] || "") || "";
+			return sTienda + " - " + (oTiendas[sTienda] || "") || "";
 		},
 
 		onPressItemArticulo: function (oEvent) {
@@ -833,23 +918,37 @@ sap.ui.define([
 				this.getView().editarTiendaDialog.close();
 			}
 		},
-		
+
+		formatTypeErroresGenerales: function (aErroresModulo, aErroresSurtido) {
+
+			var aModulo = aErroresModulo.filter(function (oError) {
+				return oError.Message.indexOf("Artículo") < 0;
+			}, this);
+			var aSurtido = aErroresSurtido.filter(function (oError) {
+				return (oError.Message.indexOf("Surtido") >= 0 || oError.Message.indexOf("surtido") >= 0) && oError.Message.indexOf("Tienda") <
+					0;
+			}, this);
+
+			var aFinal = [];
+			aFinal = aModulo.concat(aSurtido);
+
+			return aFinal.length > 0 ? "Emphasized" : "Transparent";
+		},
+
 		onPressAbrirErroresGenerales: function (oEvent) {
 
-			// var aErroresModulo = this.getView().getModel().getProperty("/returnModulo");
-			// var aModulo = aErroresModulo.filter(function (oError) {
-			// 	// Trapi Fer para nataly
-			// 	return (oError.Modulo !== "" || oError.Message.indexOf("Módulo") >= 0 || oError.Message.indexOf("módulo") >= 0) && oError.Message.indexOf("Artículo") < 0 && oError.Message.indexOf("X") < 0;
-			// }, this);
-			// var aErroresSurtido = this.getView().getModel().getProperty("/returnSurtido");
-			// var aSurtido = aErroresSurtido.filter(function (oError) {
-			// 	// Trapi Fer para nataly
-			// 	return (oError.Message.indexOf("Surtido") >= 0 || oError.Message.indexOf("surtido") >= 0) && oError.Message.indexOf("Tienda") < 0 && oError.Message.indexOf("X") < 0;
-			// }, this);
+			var aErroresModulo = this.getView().getModel("viewModel").getProperty("/erroresModulo");
+			var aModulo = aErroresModulo.filter(function (oError) {
+				return oError.Message.indexOf("Artículo") < 0;
+			}, this);
+			var aErroresSurtido = this.getView().getModel("viewModel").getProperty("/erroresSurtido");
+			var aSurtido = aErroresSurtido.filter(function (oError) {
+				return (oError.Message.indexOf("Surtido") >= 0 || oError.Message.indexOf("surtido") >= 0) && oError.Message.indexOf("Tienda") <
+					0;
+			}, this);
 
-			// var aFinal = aModulo.concat(aSurtido);
-			
-			var aFinal = this.getView().getModel("viewModel").getProperty("/errores");
+			var aFinal = aModulo.concat(aSurtido);
+
 			if (!this.getView()._errorsDialog) {
 				this.getView()._errorsDialog = new sap.m.MessagePopover({
 					groupItems: true
@@ -861,16 +960,15 @@ sap.ui.define([
 			aFinal.forEach(function (oError) {
 				this.getView()._errorsDialog.addItem(new sap.m.MessageItem({
 					title: oError.Message,
-					subtitle: oError.Modulo !== ""? oError.Modulo : oError.Surtido,
-					type: oError.Type === "S" ? "Success" : "Error"
+					subtitle: oError.Modulo ? oError.Modulo : oError.Surtido,
+					type: oError.Type === "E" ? "Error" : "Warning"
 				}));
 			}, this);
 			this.getView()._errorsDialog.openBy(oEvent.getSource());
 		},
-		
-		onPressFiltrarFallidosArticulos : function(oEvent){
-			
-			
+
+		onPressFiltrarFallidosArticulos: function (oEvent) {
+
 			var oTable = this.getModuloTable();
 			oTable.getBinding("items").filter(undefined);
 			var that = this;
@@ -890,10 +988,9 @@ sap.ui.define([
 				})]);
 			}
 		},
-		
-		onPressFiltrarFallidosTiendas : function(oEvent){
-			
-			
+
+		onPressFiltrarFallidosTiendas: function (oEvent) {
+
 			var oTable = this.getSurtidoTable();
 			oTable.getBinding("items").filter(undefined);
 			var that = this;

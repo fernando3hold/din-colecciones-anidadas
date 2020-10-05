@@ -8,19 +8,19 @@
 			<Input id="coleccionesFilter" value="{search>/Coleccion}" change="onChangeColeccion" >
 			</Input>
 			<!-- Niveles -->
-			<Label text="{i18n>label.niveles}"/>
-			<ComboBox id="nivelesFilter" selectionChange=".onChangeNivelSearch" selectedKey="{search>/Nivel}">
-				<core:Item key="1" text="Nivel 1"/>
-				<core:Item key="2" text="Nivel 2"/>
-				<core:Item key="3" text="Nivel 3"/>
-				<core:Item key="4" text="Nivel 4"/>
-				<core:Item key="5" text="Nivel 5"/>
-				<core:Item key="6" text="Nivel 6"/>
-				<core:Item key="7" text="Nivel 7"/>
-				<core:Item key="8" text="Nivel 8"/>
-				<core:Item key="9" text="Nivel 9"/>
-				<core:Item key="10" text="Nivel 10"/>
-			</ComboBox>
+			<!--<Label text="{i18n>label.niveles}"/>-->
+			<!--<ComboBox id="nivelesFilter" selectionChange=".onChangeNivelSearch" selectedKey="{search>/Nivel}">-->
+			<!--	<core:Item key="1" text="Nivel 1"/>-->
+			<!--	<core:Item key="2" text="Nivel 2"/>-->
+			<!--	<core:Item key="3" text="Nivel 3"/>-->
+			<!--	<core:Item key="4" text="Nivel 4"/>-->
+			<!--	<core:Item key="5" text="Nivel 5"/>-->
+			<!--	<core:Item key="6" text="Nivel 6"/>-->
+			<!--	<core:Item key="7" text="Nivel 7"/>-->
+			<!--	<core:Item key="8" text="Nivel 8"/>-->
+			<!--	<core:Item key="9" text="Nivel 9"/>-->
+			<!--	<core:Item key="10" text="Nivel 10"/>-->
+			<!--</ComboBox>-->
 			<!-- Flag anidados -->
 			<Label text="{i18n>label.anidados}" />
 			<CheckBox selected="{search>/Anidado}" select=".onChangeAnidado" />

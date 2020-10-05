@@ -6,18 +6,22 @@
 			<core:Title text="Módulo"/>
 			<!-- FECHA INICIO -->
 			<Label text="{i18n>label.fechaInicio}"/>
-			<DatePicker value="{editFechas>/iniModulo}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<DatePicker value="{editFechas>/iniModulo}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"
+			enabled="{path: 'editFechas>/iniModulo', formatter: '.formatter.formatEnabledEditFechaInicio'}"/>
 			<!-- FECHA FIN -->
 			<Label text="{i18n>label.fechaFin}"/>
-			<DatePicker value="{editFechas>/finModulo}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<DatePicker value="{editFechas>/finModulo}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"
+			enabled="{path: 'editFechas>/finModulo', formatter: '.formatter.formatEnabledEditFechaFin'}"/>
 			
 			<core:Title text="Surtido"/>
 			<!-- FECHA INICIO -->
 			<Label text="{i18n>label.fechaInicio}"/>
-			<DatePicker value="{editFechas>/iniSurtido}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<DatePicker value="{editFechas>/iniSurtido}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"
+			enabled="{path: 'editFechas>/iniSurtido', formatter: '.formatter.formatEnabledEditFechaInicio'}"/>
 			<!-- FECHA FIN -->
 			<Label text="{i18n>label.fechaFin}"/>
-			<DatePicker value="{editFechas>/finSurtido}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<DatePicker value="{editFechas>/finSurtido}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"
+			enabled="{path: 'editFechas>/finSurtido', formatter: '.formatter.formatEnabledEditFechaFin'}"/>
 		</form:SimpleForm>
 		<beginButton>
 			<Button text="Guardar" press=".onPressGuardarEditarFechas"/>
