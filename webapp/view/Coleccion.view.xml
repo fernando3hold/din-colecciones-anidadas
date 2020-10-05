@@ -113,12 +113,13 @@
 												<ToolbarSpacer/>
 												<ToggleButton text="Mostrar fallidos" icon="sap-icon://filter" press=".onPressFiltrarFallidosArticulos" visible="{viewModel>/editMode}"/>
 											</content>
+											<SearchField liveChange=".onLiveChangeArticulo" showSearchButton="false" width="200px"/>
 										</Toolbar>
 									</headerToolbar>
 									<items>
 										<!-- {parts: ['data>Articulo', 'viewModel>/errores'], formatter: '.formatter.showInfoStateError'} -->
-										<StandardListItem title="{data>Descripcion} ({data>Articulo})" infoState="{data>TipoError}" info="{data>Error}"
-											highlight="{= ${data>Error}? 'Error' : 'None' }"
+										<StandardListItem title="{data>Articulo} - {data>Descripcion}" infoState="{data>TipoError}" info="{data>Error}"
+											highlight="{= ${data>Error}? 'Error' : 'None' }" icon="{parts: ['data>Added','data>Borrar'], formatter:'.formatIconBorrarArticuloTienda'}"
 											description="{parts: ['data>FechaInicio', 'data>FechaFin'], formatter: '.formatter.formatDateShowTwo'}"
 											type="{= ${viewModel>/displayMode}? 'Inactive': 'Active' }" press=".onPressItemArticulo"/>
 									</items>
@@ -159,6 +160,7 @@
 									</headerToolbar>
 									<items>
 										<StandardListItem title="{parts: ['data>Tienda', 'tiendasObj>/'], formatter: '.formatTiendaDescripcion'}"
+											icon="{parts: ['data>Added','data>Borrar'], formatter:'.formatIconBorrarArticuloTienda'}"
 											description="{parts: ['data>FechaInicio', 'data>FechaFin'], formatter: '.formatter.formatDateShowTwo'}" press=".onPressItemTienda"
 											type="{= ${viewModel>/displayMode}? 'Inactive': 'Active' }"/>
 									</items>

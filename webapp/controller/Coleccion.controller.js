@@ -29,14 +29,14 @@ sap.ui.define([
 				"anidado": this.getComponentModelProperty("data", "/anidado"),
 				"erroresModulo": [],
 				"erroresSurtido": []
-				// "errores": [{
-				// 	"Message": "Articulo 1040494 está mal",
-				// 	"Type": "E"
-				// }, {
-				// 	"Message": "Modulo maligno",
-				// 	"Type": "E",
-				// 	"Modulo": "12345"
-				// }]
+					// "errores": [{
+					// 	"Message": "Articulo 1040494 está mal",
+					// 	"Type": "E"
+					// }, {
+					// 	"Message": "Modulo maligno",
+					// 	"Type": "E",
+					// 	"Modulo": "12345"
+					// }]
 			}), "viewModel");
 		},
 
@@ -167,7 +167,9 @@ sap.ui.define([
 			// }).flat();
 
 			oColeccion.toModuloItems = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
-				return oNivel.modulo.articulos.map(function (oArticulo) {
+				return oNivel.modulo.articulos.filter(function (oArticulo) {
+					return oArticulo.Added === true || oArticulo.Edited === true || oArticulo.Borrar === true;
+				}).map(function (oArticulo) {
 					var oArt = {};
 					jQuery.extend(true, oArt, oArticulo);
 					delete oArt.Nivel;
@@ -176,7 +178,8 @@ sap.ui.define([
 					delete oArt.TipoModificacion;
 					delete oArt.Error;
 					delete oArt.TipoError;
-					oArt.Borrar = false;
+					delete oArt.Added;
+					delete oArt.Edited;
 					return oArt;
 				});
 			}).flat();
@@ -189,10 +192,14 @@ sap.ui.define([
 			// }).flat();
 
 			oColeccion.toSurtidoItems = this.getComponentModelProperty("data", "/coleccion/niveles").map(function (oNivel) {
-				return oNivel.surtido.tiendas.map(function (oTienda) {
+				return oNivel.surtido.tiendas.filter(function (oTienda) {
+					return oTienda.Added === true || oTienda.Edited === true || oTienda.Borrar === true;
+				}).map(function (oTienda) {
 					var oTi = {};
 					jQuery.extend(true, oTi, oTienda);
 					delete oTi.Nivel;
+					delete oTi.Added;
+					delete oTi.Edited;
 					return oTi;
 				});
 			}).flat();
@@ -202,9 +209,11 @@ sap.ui.define([
 			sap.ui.core.BusyIndicator.show(0);
 			this.getComponentModel().create("/EMColeccionSet", oColeccion, { // ColeccionSet
 				success: function (oData) {
-					that.getView().getModel("viewModel").setProperty('/erroresModulo', oData.toReturnModulo ? oData.toReturnModulo.results : []);
-					that.getView().getModel("viewModel").setProperty('/erroresSurtido', oData.toReturnSurtido ? oData.toReturnSurtido.results : []);
-					that.setErrorOnItem(oData.toReturnModulo.results, oData.toReturnSurtido.results);
+					var aErroresModulo = oData.toReturnModulo ? oData.toReturnModulo.results : [],
+						aErroresSurtido = oData.toReturnSurtido ? oData.toReturnSurtido.results : [];
+					that.getView().getModel("viewModel").setProperty('/erroresModulo', aErroresModulo);
+					that.getView().getModel("viewModel").setProperty('/erroresSurtido', aErroresSurtido);
+					that.setErrorOnItem(aErroresModulo, aErroresSurtido);
 					sap.ui.core.BusyIndicator.hide();
 				},
 				error: function (oData) {
@@ -219,6 +228,9 @@ sap.ui.define([
 			var aEModulo = aErroresModulo,
 				aESurtido = aErroresSurtido;
 			var aNiveles = this.getComponentModelProperty("data", "/coleccion/niveles");
+			if(aEModulo.length === 0 && aESurtido.length === 0){
+				return;
+			}
 			aNiveles.forEach(function (oNivel) {
 
 				oNivel.modulo.articulos.forEach(function (oArticulo) {
@@ -298,7 +310,8 @@ sap.ui.define([
 					"Tienda": oNewTienda.Articulo,
 					"Descripcion": oNewTienda.Descripcion,
 					"FechaInicio": oNewTienda.FechaInicio,
-					"FechaFin": oNewTienda.FechaFin
+					"FechaFin": oNewTienda.FechaFin,
+					"Added": true
 				};
 				aItemsNivel.push(oNewTiendaToSet);
 				this.setTiendasInLevel( /* iLevel */ undefined, aItemsNivel);
@@ -348,7 +361,8 @@ sap.ui.define([
 					"Descripcion": oNewArticulo.Descripcion,
 					"NoAnidar": oNewArticulo.NoAnidar,
 					"FechaInicio": oNewArticulo.FechaInicio,
-					"FechaFin": oNewArticulo.FechaFin
+					"FechaFin": oNewArticulo.FechaFin,
+					"Added": true
 				};
 				aItemsNivel.push(oNewArticuloToSet);
 				this.setArticulosInLevel( /* iLevel */ undefined, aItemsNivel);
@@ -461,20 +475,37 @@ sap.ui.define([
 
 		onPressBorrarArticulo: function (oEvent) {
 
-			var aListaArticulosBorrar = this.getModuloTable().getSelectedContexts().map(function (oContext) {
+			var aListaArticulosBorrar = this.getModuloTable().getSelectedContexts().filter(function (oContext) {
+				return oContext.getProperty("Added") === true;
+			}).map(function (oContext) {
 				return oContext.getProperty("Articulo");
 			});
+
+			var aListaArticulosMarcar = this.getModuloTable().getSelectedContexts().filter(function (oContext) {
+				return oContext.getProperty("Added") === undefined;
+			}).map(function (oContext) {
+				return oContext.getProperty("Articulo");
+			});
+
 			var aArticulosOrigen = [];
 			try {
-				// Eliminamos el articulo del nivel actual
+				// Eliminamos el articulo del nivel actual los que hemos añadido
 				aArticulosOrigen = this.getArticulosInLevel().filter(function (oArticulo) {
 					return !aListaArticulosBorrar.includes(oArticulo.Articulo);
+				});
+				// Marcamos para borrar los que ya estaban en SAP
+				aArticulosOrigen = aArticulosOrigen.map(function (oArticulo) {
+					if (aListaArticulosMarcar.includes(oArticulo.Articulo)) {
+						oArticulo.Borrar = true;
+					}
+					return oArticulo;
 				});
 			} catch (exc) {
 				return sap.m.MessageToast.show("No hay listado de articulos para borrar")
 			}
 			this.setArticulosInLevel( /* iLevel */ undefined, aArticulosOrigen);
-			// this.getComponentModel("data").updateBindings(true);
+			this.getComponentModel("data").updateBindings(true);
+			this.getModuloTable().removeSelections(true);
 		},
 
 		onPressBorrarTienda: function (oEvent) {
@@ -493,6 +524,8 @@ sap.ui.define([
 			}
 			this.setTiendasInLevel( /* iLevel */ undefined, aTiendasOrigen);
 			this.getComponentModel("data").updateBindings(true);
+
+			this.getSurtidoTable().removeSelections(true);
 		},
 
 		onPressEditarFechas: function () {
@@ -690,7 +723,7 @@ sap.ui.define([
 							delete oLinea[sProperty];
 						}
 					}
-
+					oLinea.Added = true;
 					oLinea.Descripcion = "";
 					oLinea.FechaInicio = this.getReadDate(oLinea.FechaInicio) || this.getTodayDateToSend();
 					oLinea.FechaFin = this.getReadDate(oLinea.FechaFin); // || "99991231";
@@ -743,6 +776,7 @@ sap.ui.define([
 
 					oLinea.Descripcion = "";
 
+					oLinea.Added = true;
 					if (oTienda) {
 						oLinea.Descripcion = oTienda.Descripcion;
 					}
@@ -836,7 +870,9 @@ sap.ui.define([
 				"Descripcion": oArticulo.Descripcion,
 				"NoAnidar": oArticulo.NoAnidar,
 				"FechaInicio": oArticulo.FechaInicio,
-				"FechaFin": oArticulo.FechaFin //this.oModel.getProperty("/seleccionado/fechaFin")
+				"FechaFin": oArticulo.FechaFin, //this.oModel.getProperty("/seleccionado/fechaFin")
+				"Added": oArticulo.Added,
+				"Edited": oArticulo.Edited
 			};
 
 			this.getView().editarArticuloDialog.setModel(new sap.ui.model.json.JSONModel(oNew), "editArticulo");
@@ -852,7 +888,7 @@ sap.ui.define([
 			var aItemsNivel = [];
 			var oNewArticulo = this.getView().editarArticuloDialog.getModel("editArticulo").getProperty("/");
 			var sBinding = this.getView().editarArticuloDialog.getCustomData()[0].getValue();
-
+			oNewArticulo.Edited = true;
 			this.setComponentModelProperty("data", sBinding, oNewArticulo);
 
 			this.getDescripcionArticulos(this.getCurrentNivel());
@@ -882,7 +918,9 @@ sap.ui.define([
 				"Tienda": oTienda.Tienda,
 				"Descripcion": oTienda.Descripcion,
 				"FechaInicio": oTienda.FechaInicio,
-				"FechaFin": oTienda.FechaFin //this.oModel.getProperty("/seleccionado/fechaFin")
+				"FechaFin": oTienda.FechaFin, //this.oModel.getProperty("/seleccionado/fechaFin")
+				"Added": oTienda.Added,
+				"Edited": oTienda.Edited,
 			};
 
 			this.getView().editarTiendaDialog.setModel(new sap.ui.model.json.JSONModel(oNew), "editTienda");
@@ -908,7 +946,8 @@ sap.ui.define([
 
 			var oNewTienda = this.getView().editarTiendaDialog.getModel("editTienda").getProperty("/");
 			var sBinding = this.getView().editarTiendaDialog.getCustomData()[0].getValue();
-
+			
+			oNewTienda.Edited = true;
 			this.setComponentModelProperty("data", sBinding, oNewTienda);
 			this.getView().editarTiendaDialog.close();
 		},
@@ -1009,6 +1048,32 @@ sap.ui.define([
 					}.bind(that)
 				})]);
 			}
+		},
+
+		formatIconBorrarArticuloTienda: function (bAdded, bBorrar) {
+
+			return bAdded === undefined && bBorrar === true ? "sap-icon://delete" : "";
+		},
+
+		onLiveChangeArticulo: function (oEvent) {
+
+			// this.getModuloTable().filter(undefined);
+			if(oEvent.getParameter("newValue") === ""){
+				return;
+			}
+			this.getModuloTable().getBinding("items").filter([new sap.ui.model.Filter({
+				filters: [new sap.ui.model.Filter({
+					path: "Articulo",
+					operator: "Contains",
+					value1: oEvent.getParameter("newValue")
+				}), new sap.ui.model.Filter({
+					path: "Descripcion",
+					operator: "Contains",
+					value1: oEvent.getParameter("newValue")
+				})],
+				and: false
+			})]);
+
 		}
 
 		/**

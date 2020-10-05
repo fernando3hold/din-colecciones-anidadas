@@ -6,7 +6,7 @@
 			<!-- PROVEEDOR -->
 			<Label text="{i18n>label.articulo}"/>
 			<Input id="articulo" value="{editArticulo>/Articulo}" valueLiveUpdate="false" showValueHelp="true"
-				valueHelpRequest=".onRequestValueHelpArticulo" change=".onChangeArticulo"/>
+				valueHelpRequest=".onRequestValueHelpArticulo" change=".onChangeArticulo" enabled="false"/>
 			<Text text="{editArticulo>/Descripcion}"/>
 			<!-- NO ANIDAR -->
 			<Label text="{i18n>label.noAnidar}" visible="false"/>
