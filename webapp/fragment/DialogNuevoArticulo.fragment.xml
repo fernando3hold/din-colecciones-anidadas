@@ -14,10 +14,10 @@
 				visible="{= ${/seleccionado/tipoColeccion} === 'A' ? true: false}"/>
 			<!-- FECHA INICIO -->
 			<Label text="{i18n>label.fechaInicio}"/>
-			<DatePicker id="inicio" value="{newArticulo>/FechaInicio}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<DatePicker id="inicio" value="{newArticulo>/FechaInicio}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy" minDate="{viewModel>/minDateInicio}"/>
 			<!-- FECHA FIN -->
 			<Label text="{i18n>label.fechaFin}"/>
-			<DatePicker id="fin" value="{newArticulo>/FechaFin}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"/>
+			<DatePicker id="fin" value="{newArticulo>/FechaFin}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy" minDate="{viewModel>/minDateFin}"/>
 		</form:SimpleForm>
 		<beginButton>
 			<Button text="Guardar" press=".onPressAñadirArticulo"/>

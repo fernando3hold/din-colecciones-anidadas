@@ -25,6 +25,7 @@
 				<!--	<OverflowToolbarButton type="Transparent" icon="sap-icon://decline" press="handleClose"/>-->
 				<!--</uxap:navigationActions>-->
 				<uxap:actions>
+					<Button icon="sap-icon://inspection" text="Nueva búsqueda" press=".onPressNuevaBusqueda" type="Transparent"/>
 					<ToggleButton text="Editar" press=".toggleMode" type="Transparent"/>
 				</uxap:actions>
 			</uxap:ObjectPageDynamicHeaderTitle>
@@ -74,7 +75,7 @@
 						</MenuButton>
 						<Button text="Borrar" press=".onPressBorrar" type="Transparent" icon="sap-icon://sys-cancel" visible="{viewModel>/editMode}"/>
 						<Button text="Mover" icon="sap-icon://action" press="onPressMover" type="Transparent" visible="{viewModel>/editMode}"/>
-						<Button text="Editar fechas" press=".onPressEditarFechas" type="Transparent" icon="sap-icon://edit-outside" visible="{viewModel>/editMode}"/>
+						<!--<Button text="Editar fechas" press=".onPressEditarFechas" type="Transparent" icon="sap-icon://edit-outside" visible="{viewModel>/editMode}"/>-->
 					</uxap:actions>
 					<uxap:blocks>
 						<HBox>

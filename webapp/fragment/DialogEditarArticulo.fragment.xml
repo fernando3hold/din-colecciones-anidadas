@@ -13,13 +13,13 @@
 			<CheckBox id="cbNoAnidar" text="{i18n>label.noAnidar}" selected="{editArticulo>/NoAnidar}"
 				visible="{= ${/seleccionado/tipoColeccion} === 'A' ? true: false}"/>
 			<!-- FECHA INICIO -->
-			<Label text="{i18n>label.fechaInicio}"/>
-			<DatePicker id="inicio" value="{editArticulo>/FechaInicio}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"
-				enabled="{path: 'editArticulo>/FechaInicio', formatter: '.formatter.formatEnabledEditFechaInicio'}"/>
+			<Label text="{i18n>label.fechaInicio}"/> 
+			<DatePicker id="inicio" value="{editArticulo>/FechaInicio}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy" minDate="{viewModel>/minDateInicio}"/>
+				<!--enabled="{path: 'editArticulo>/FechaInicio', formatter: '.formatter.formatEnabledEditFechaInicio'}"/>-->
 			<!-- FECHA FIN -->
 			<Label text="{i18n>label.fechaFin}"/>
-			<DatePicker id="fin" value="{editArticulo>/FechaFin}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"
-			enabled="{path: 'editArticulo>/FechaFin', formatter: '.formatter.formatEnabledEditFechaFin'}"/>
+			<DatePicker id="fin" value="{editArticulo>/FechaFin}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy" minDate="{viewModel>/minDateFin}"/>
+			<!--enabled="{path: 'editArticulo>/FechaFin', formatter: '.formatter.formatEnabledEditFechaFin'}"/>-->
 		</form:SimpleForm>
 		<beginButton>
 			<Button text="Guardar" press=".onPressConfirmarEditarArticulo"/>

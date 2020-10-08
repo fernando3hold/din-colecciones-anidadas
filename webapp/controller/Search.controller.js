@@ -14,7 +14,18 @@ sap.ui.define([
 		 * @memberOf dinosol.din-colecciones-anidadas.view.Search
 		 */
 		onInit: function () {
-
+			
+				this._oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+			this._oRouter.getTarget("Search").attachDisplay(function (oEvt) {
+				this._onDisplay();
+			}, this);
+			jQuery.sap.delayedCall(200, this, function () {
+				this.loadTiendas();
+			});
+		},
+		
+		_onDisplay : function(){
+			
 			this.getView().setModel(new sap.ui.model.json.JSONModel({
 				"Coleccion": "",
 				"Nivel": "",
@@ -25,6 +36,10 @@ sap.ui.define([
 					"dinosol.din-colecciones-anidadas.fragment.DialogSearch", this);
 				this.getView().addDependent(this.getView().searchDialog);
 			}
+			
+			this.setComponentModelProperty("data", "/coleccion", undefined);
+			this.setComponentModelProperty("data", "/originalColeccion", undefined);
+			
 			jQuery.sap.delayedCall(200, this, function () {
 				this.loadTiendas();
 				this.getView().searchDialog.open();
@@ -52,7 +67,7 @@ sap.ui.define([
 						"Modulo": "1",
 						"Denominacion": "Modulo prueba",
 						"Clase": "4",
-						"FechaInicio": "20200921",
+						"FechaInicio": "20201021",
 						"FechaFin": "99991231",
 						"articulos": [{
 							"Articulo": "1040494",
@@ -64,7 +79,7 @@ sap.ui.define([
 					"surtido": {
 						"Surtido": "2",
 						"Denominacion": "Surtido prueba",
-						"FechaInicio": "20200921",
+						"FechaInicio": "20201021",
 						"FechaFin": "99991231",
 						"tiendas": [{
 							"Tienda": "9001",
@@ -104,10 +119,10 @@ sap.ui.define([
 			};
 			that.setComponentModelProperty("data", "/coleccion", oFinalData);
 			that.setComponentModelProperty("data", "/anidado", bAnidado);
-			// that.getComponentModel("data").updateBindings(true);
-			// that.onPressCerrarDialog();
-			// that.getOwnerComponent().getRouter().getTargets().display("Coleccion");
-			// return;
+			that.getComponentModel("data").updateBindings(true);
+			that.onPressCerrarDialog();
+			that.getOwnerComponent().getRouter().getTargets().display("Coleccion");
+			return;
 			sap.ui.core.BusyIndicator.show(0);
 			var sSoloOrigen = bAnidado ? "X" : "";
 			this.getComponentModel().read("/ColeccionSet(Id='" + sColeccion + "',SoloOrigen='" + sSoloOrigen + "')", {

@@ -26,6 +26,8 @@ sap.ui.define([
 			this.getView().setModel(new sap.ui.model.json.JSONModel({
 				"editMode": false,
 				"displayMode": true,
+				"minDateInicio": new Date(),
+				"minDateFin": new Date(),
 				"anidado": this.getComponentModelProperty("data", "/anidado"),
 				"erroresModulo": [],
 				"erroresSurtido": []
@@ -39,6 +41,11 @@ sap.ui.define([
 					// }]
 			}), "viewModel");
 		},
+		
+		onPressNuevaBusqueda : function(){
+			
+			this.getOwnerComponent().getRouter().getTargets().display("Search");
+		},
 
 		toggleMode: function () {
 
@@ -49,7 +56,7 @@ sap.ui.define([
 		onPressMover: function () {
 
 			if (this.getModuloTable().getSelectedContexts().length === 0 && this.getSurtidoTable().getSelectedContexts().length === 0) {
-				return sap.m.MessageToast.show("Seleccione algun artículo o tienda");
+				return sap.m.MessageToast.show("Seleccione algun artículo");
 			}
 			this.openMoverNiveles();
 		},
@@ -214,6 +221,7 @@ sap.ui.define([
 					that.getView().getModel("viewModel").setProperty('/erroresModulo', aErroresModulo);
 					that.getView().getModel("viewModel").setProperty('/erroresSurtido', aErroresSurtido);
 					that.setErrorOnItem(aErroresModulo, aErroresSurtido);
+					sap.m.MessageToast.show("Los artículos han sido enviados");
 					sap.ui.core.BusyIndicator.hide();
 				},
 				error: function (oData) {
@@ -306,12 +314,16 @@ sap.ui.define([
 
 			if (this.getCurrentNivel() !== null && this.getCurrentNivel() !== undefined) {
 				aItemsNivel = this.getTiendasInLevel();
+				var sSurtido = this.getComponentModelProperty("data", "/coleccion/niveles/" + (this.getCurrentNivel() - 1) + "/surtido/Surtido");
 				var oNewTiendaToSet = {
 					"Tienda": oNewTienda.Articulo,
 					"Descripcion": oNewTienda.Descripcion,
 					"FechaInicio": oNewTienda.FechaInicio,
 					"FechaFin": oNewTienda.FechaFin,
-					"Added": true
+					"Added": true,
+					"Surtido": sSurtido,
+					"Accion": "B",
+					"Borrar": false
 				};
 				aItemsNivel.push(oNewTiendaToSet);
 				this.setTiendasInLevel( /* iLevel */ undefined, aItemsNivel);
@@ -356,13 +368,17 @@ sap.ui.define([
 
 			if (this.getCurrentNivel() !== null && this.getCurrentNivel() !== undefined) {
 				aItemsNivel = this.getArticulosInLevel();
+				var sModulo = this.getComponentModelProperty("data", "/coleccion/niveles/" + (this.getCurrentNivel() - 1) + "/modulo/Modulo");
 				var oNewArticuloToSet = {
 					"Articulo": oNewArticulo.Articulo,
 					"Descripcion": oNewArticulo.Descripcion,
 					"NoAnidar": oNewArticulo.NoAnidar,
 					"FechaInicio": oNewArticulo.FechaInicio,
 					"FechaFin": oNewArticulo.FechaFin,
-					"Added": true
+					"Added": true,
+					"Borrar": false,
+					"Modulo": sModulo,
+					"Accion": "B"
 				};
 				aItemsNivel.push(oNewArticuloToSet);
 				this.setArticulosInLevel( /* iLevel */ undefined, aItemsNivel);
@@ -872,7 +888,10 @@ sap.ui.define([
 				"FechaInicio": oArticulo.FechaInicio,
 				"FechaFin": oArticulo.FechaFin, //this.oModel.getProperty("/seleccionado/fechaFin")
 				"Added": oArticulo.Added,
-				"Edited": oArticulo.Edited
+				"Edited": oArticulo.Edited,
+				"Borrar": oArticulo.Borrar,
+				"Modulo": oArticulo.Modulo,
+				"Accion": ""
 			};
 
 			this.getView().editarArticuloDialog.setModel(new sap.ui.model.json.JSONModel(oNew), "editArticulo");
@@ -1015,7 +1034,7 @@ sap.ui.define([
 				oTable.getBinding("items").filter([new sap.ui.model.Filter({
 					path: "Articulo",
 					test: function (sArticulo) {
-						var aErrors = this.getView().getModel("viewModel").getProperty("/errores");
+						var aErrors = this.getView().getModel("viewModel").getProperty("/erroresModulo");
 						if (aErrors.length === 0) {
 							return false;
 						}
@@ -1037,7 +1056,7 @@ sap.ui.define([
 				oTable.getBinding("items").filter([new sap.ui.model.Filter({
 					path: "Tienda",
 					test: function (sArticulo) {
-						var aErrors = this.getView().getModel("viewModel").getProperty("/errores");
+						var aErrors = this.getView().getModel("viewModel").getProperty("/erroresSurtido");
 						if (aErrors.length === 0) {
 							return false;
 						}
