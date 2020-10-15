@@ -14,8 +14,8 @@ sap.ui.define([
 		 * @memberOf dinosol.din-colecciones-anidadas.view.Search
 		 */
 		onInit: function () {
-			
-				this._oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+
+			this._oRouter = sap.ui.core.UIComponent.getRouterFor(this);
 			this._oRouter.getTarget("Search").attachDisplay(function (oEvt) {
 				this._onDisplay();
 			}, this);
@@ -23,9 +23,9 @@ sap.ui.define([
 				this.loadTiendas();
 			});
 		},
-		
-		_onDisplay : function(){
-			
+
+		_onDisplay: function () {
+
 			this.getView().setModel(new sap.ui.model.json.JSONModel({
 				"Coleccion": "",
 				"Nivel": "",
@@ -36,10 +36,10 @@ sap.ui.define([
 					"dinosol.din-colecciones-anidadas.fragment.DialogSearch", this);
 				this.getView().addDependent(this.getView().searchDialog);
 			}
-			
+
 			this.setComponentModelProperty("data", "/coleccion", undefined);
 			this.setComponentModelProperty("data", "/originalColeccion", undefined);
-			
+
 			jQuery.sap.delayedCall(200, this, function () {
 				this.loadTiendas();
 				this.getView().searchDialog.open();
@@ -59,70 +59,20 @@ sap.ui.define([
 			var sColeccion = this.getView().getModel("search").getProperty("/Coleccion"),
 				sNivel = this.getView().getModel("search").getProperty("/Nivel"),
 				bAnidado = this.getView().getModel("search").getProperty("/Anidado");
-			var oFinalData = {
-				"id": "Prueba",
-				"niveles": [{
-					"NumNivel": 1,
-					"modulo": {
-						"Modulo": "1",
-						"Denominacion": "Modulo prueba",
-						"Clase": "4",
-						"FechaInicio": "20201021",
-						"FechaFin": "99991231",
-						"articulos": [{
-							"Articulo": "1040494",
-							"Descripcion": "Articulo 1",
-							"FechaInicio": "20200921",
-							"FechaFin": "99991231"
-						}]
-					},
-					"surtido": {
-						"Surtido": "2",
-						"Denominacion": "Surtido prueba",
-						"FechaInicio": "20201021",
-						"FechaFin": "99991231",
-						"tiendas": [{
-							"Tienda": "9001",
-							"Denominacion": "Tienda 1",
-							"FechaInicio": "20200921",
-							"FechaFin": "99991231"
-						}]
-					}
-				}, {
-					"NumNivel": 2,
-					"modulo": {
-						"Modulo": "3",
-						"Denominacion": "Modulo prueba 2",
-						"Clase": "4",
-						"FechaInicio": "20200921",
-						"FechaFin": "99991231",
-						"articulos": [{
-							"Articulo": "1040495",
-							"Descripcion": "Articulo 2",
-							"FechaInicio": "20200921",
-							"FechaFin": "99991231"
-						}]
-					},
-					"surtido": {
-						"Surtido": "3",
-						"Denominacion": "Surtido prueba 2",
-						"FechaInicio": "20200921",
-						"FechaFin": "99991231",
-						"tiendas": [{
-							"Tienda": "9001",
-							"Denominacion": "Tienda 2",
-							"FechaInicio": "20200921",
-							"FechaFin": "99991231"
-						}]
-					}
-				}]
-			};
-			that.setComponentModelProperty("data", "/coleccion", oFinalData);
-			that.setComponentModelProperty("data", "/anidado", bAnidado);
-			that.getComponentModel("data").updateBindings(true);
-			that.onPressCerrarDialog();
-			that.getOwnerComponent().getRouter().getTargets().display("Coleccion");
-			return;
+
+			/**
+			 * Inicio - Descomentar para local
+			 */
+			// var oFinalData = this.getMockData();
+			// that.setComponentModelProperty("data", "/coleccion", oFinalData);
+			// that.setComponentModelProperty("data", "/anidado", bAnidado);
+			// that.getComponentModel("data").updateBindings(true);
+			// that.onPressCerrarDialog();
+			// that.getOwnerComponent().getRouter().getTargets().display("Coleccion");
+			// return;
+			/**
+			 * Fin - Descomentar para local
+			 */
 			sap.ui.core.BusyIndicator.show(0);
 			var sSoloOrigen = bAnidado ? "X" : "";
 			this.getComponentModel().read("/ColeccionSet(Id='" + sColeccion + "',SoloOrigen='" + sSoloOrigen + "')", {
@@ -169,13 +119,13 @@ sap.ui.define([
 				var aModulo = oData.toModuloHeader.results.filter(function (oModulo) {
 					return sNivel === oModulo.Nivel;
 				}, this);
-				if(!bError){
+				if (!bError) {
 					bError = aModulo.length > 1 || aModulo.length === 0;
 				}
 				if (aModulo.length === 1) {
 					oNivel["modulo"] = aModulo[0];
 					var sModulo = oNivel.modulo.Modulo;
-					oNivel["modulo"]["articulos"] = oData.toModuloItems.results.filter(function(oArticulo){
+					oNivel["modulo"]["articulos"] = oData.toModuloItems.results.filter(function (oArticulo) {
 						return oArticulo.Modulo === sModulo;
 					}, this).map(function (oArticulo) {
 						delete oArticulo.__metadata;
@@ -186,13 +136,13 @@ sap.ui.define([
 				var aSurtido = oData.toSurtidoHeader.results.filter(function (oSurtido) {
 					return sNivel === oSurtido.Nivel;
 				}, this);
-				if(!bError){
+				if (!bError) {
 					bError = aSurtido.length > 1 || aSurtido.length === 0;
 				}
 				if (aSurtido.length === 1) {
 					oNivel["surtido"] = aSurtido[0];
 					var sSurtido = oNivel.surtido.Surtido;
-					oNivel["surtido"]["tiendas"] = oData.toSurtidoItems.results.filter(function(oTienda){
+					oNivel["surtido"]["tiendas"] = oData.toSurtidoItems.results.filter(function (oTienda) {
 						return oTienda.Surtido === sSurtido;
 					}, this).map(function (oTienda) {
 						delete oTienda.__metadata;
@@ -406,6 +356,110 @@ sap.ui.define([
 				}
 			});
 		},
+
+		getMockData: function () {
+
+			return {
+				"id": "Prueba",
+				"niveles": [{
+					"NumNivel": 1,
+					"modulo": {
+						"Modulo": "1",
+						"Denominacion": "Modulo prueba",
+						"Clase": "4",
+						"FechaInicio": "20201021",
+						"FechaFin": "99991231",
+						"articulos": [{
+							"Articulo": "1040494",
+							"Descripcion": "Articulo 1",
+							"FechaInicio": "20201025",
+							"FechaFin": "99991231"
+						}, {
+							"Articulo": "1040497",
+							"Descripcion": "Articulo 7",
+							"FechaInicio": "20201015",
+							"FechaFin": "99991231"
+						}, {
+							"Articulo": "1040498",
+							"Descripcion": "Articulo 8",
+							"FechaInicio": "20200912",
+							"FechaFin": "20200918"
+						}]
+					},
+					"surtido": {
+						"Surtido": "2",
+						"Denominacion": "Surtido prueba",
+						"FechaInicio": "20201021",
+						"FechaFin": "99991231",
+						"tiendas": [{
+							"Tienda": "9002",
+							"Denominacion": "Tienda 1",
+							"FechaInicio": "20200921",
+							"FechaFin": "99991231"
+						}, {
+							"Tienda": "9003",
+							"Denominacion": "Tienda 2",
+							"FechaInicio": "20200921",
+							"FechaFin": "20200930"
+						}]
+					}
+				}, {
+					"NumNivel": 2,
+					"modulo": {
+						"Modulo": "3",
+						"Denominacion": "Modulo prueba 2",
+						"Clase": "4",
+						"FechaInicio": "20200921",
+						"FechaFin": "99991231",
+						"articulos": [{
+							"Articulo": "1040495",
+							"Descripcion": "Articulo 2",
+							"FechaInicio": "20200921",
+							"FechaFin": "99991231"
+						}]
+					},
+					"surtido": {
+						"Surtido": "3",
+						"Denominacion": "Surtido prueba 2",
+						"FechaInicio": "20200921",
+						"FechaFin": "99991231",
+						"tiendas": [{
+							"Tienda": "9002",
+							"Denominacion": "Tienda 2",
+							"FechaInicio": "20200921",
+							"FechaFin": "99991231"
+						}]
+					}
+				}, {
+					"NumNivel": 3,
+					"modulo": {
+						"Modulo": "4",
+						"Denominacion": "Modulo prueba 3",
+						"Clase": "4",
+						"FechaInicio": "20200921",
+						"FechaFin": "99991231",
+						"articulos": [{
+							"Articulo": "1040496",
+							"Descripcion": "Articulo 6",
+							"FechaInicio": "20201013",
+							"FechaFin": "99991231"
+						}]
+					},
+					"surtido": {
+						"Surtido": "1",
+						"Denominacion": "Surtido prueba 1",
+						"FechaInicio": "20200921",
+						"FechaFin": "99991231",
+						"tiendas": [{
+							"Tienda": "9002",
+							"Denominacion": "Tienda 2",
+							"FechaInicio": "20200921",
+							"FechaFin": "99991231"
+						}]
+					}
+				}]
+			};
+		}
 
 	});
 

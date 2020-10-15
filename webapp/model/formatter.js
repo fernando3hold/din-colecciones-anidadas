@@ -4,7 +4,16 @@ sap.ui.define([
 	function (NumberFormat) {
 		"use strict";
 		return {
-
+			
+			
+			formatTextTienda : function(sTienda, oTiendas){
+				
+				if(!sTienda){
+					return "";
+				}
+				return sTienda + " - " + oTiendas[sTienda];
+			},
+			
 			formatEnabledEditFechaInicio: function (sInicio) {
 
 				var fnToDate = function (sDate) {
@@ -14,13 +23,32 @@ sap.ui.define([
 					return new Date(sYear, sMonth - 1, sDay).setHours(0,0,0);
 				};
 				
-				if(fnToDate(sInicio) >= new Date().getTime()){
+				if(fnToDate(sInicio) >= new Date().setHours(0,0,0)){
 					return true;
 				} else {
 					return false;
 				}
 
 			},
+			
+			formatEnabledEditFechaInicioText : function(sInicio){
+				
+				var fnToDate = function (sDate) {
+					var sDay = sDate.substring(6, 8),
+						sMonth = sDate.substring(4, 6),
+						sYear = sDate.substring(0, 4);
+					return new Date(sYear, sMonth - 1, sDay).setHours(0,0,0);
+				};
+				
+				if(fnToDate(sInicio) >= new Date().setHours(0,0,0)){
+					return false;
+				} else {
+					return true;
+				}
+				
+			},
+			
+			
 			formatEnabledEditFechaFin: function (sFin) {
 
 				var fnToDate = function (sDate) {
@@ -30,10 +58,27 @@ sap.ui.define([
 					return new Date(sYear, sMonth - 1, sDay).setHours(0,0,0);
 				};
 				
-				if(fnToDate(sFin) >= new Date().getTime()){
+				if(fnToDate(sFin) >= new Date().setHours(0,0,0)){
 					return true;
 				} else {
 					return false;
+				}
+
+			},
+			
+			formatEnabledEditFechaFinText: function (sFin) {
+
+				var fnToDate = function (sDate) {
+					var sDay = sDate.substring(6, 8),
+						sMonth = sDate.substring(4, 6),
+						sYear = sDate.substring(0, 4);
+					return new Date(sYear, sMonth - 1, sDay).setHours(0,0,0);
+				};
+				
+				if(fnToDate(sFin) >= new Date().setHours(0,0,0)){
+					return false;
+				} else {
+					return true;
 				}
 
 			},

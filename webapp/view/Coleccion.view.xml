@@ -114,7 +114,7 @@
 												<ToolbarSpacer/>
 												<ToggleButton text="Mostrar fallidos" icon="sap-icon://filter" press=".onPressFiltrarFallidosArticulos" visible="{viewModel>/editMode}"/>
 											</content>
-											<SearchField liveChange=".onLiveChangeArticulo" showSearchButton="false" width="200px"/>
+											<SearchField liveChange=".onLiveChangeArticulo" showSearchButton="true" width="200px" change="onChangeSearchField"/>
 										</Toolbar>
 									</headerToolbar>
 									<items>

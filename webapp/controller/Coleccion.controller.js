@@ -41,9 +41,9 @@ sap.ui.define([
 					// }]
 			}), "viewModel");
 		},
-		
-		onPressNuevaBusqueda : function(){
-			
+
+		onPressNuevaBusqueda: function () {
+
 			this.getOwnerComponent().getRouter().getTargets().display("Search");
 		},
 
@@ -109,27 +109,25 @@ sap.ui.define([
 		openMoverNiveles: function () {
 
 			var that = this;
-			if (!this.getView().moverNivelesDialog) {
-				this.getView().moverNivelesDialog = new sap.m.SelectDialog({
-					title: "Niveles",
-					items: {
-						path: "data>/coleccion/niveles",
-						filters: [
-							new sap.ui.model.Filter({
-								path: "NumNivel",
-								operator: "NE",
-								value1: this.getCurrentNivel()
-							})
-						],
-						template: new sap.m.StandardListItem({
-							title: "Nivel {data>NumNivel}"
+			this.getView().moverNivelesDialog = new sap.m.SelectDialog({
+				title: "Niveles",
+				items: {
+					path: "data>/coleccion/niveles",
+					filters: [
+						new sap.ui.model.Filter({
+							path: "NumNivel",
+							operator: "NE",
+							value1: this.getCurrentNivel()
 						})
-					},
-					confirm: [that.confirmMoverDialog, that],
-					cancel: [that.cancelMoverDialog, that]
-				});
-				this.getView().addDependent(this.getView().moverNivelesDialog);
-			}
+					],
+					template: new sap.m.StandardListItem({
+						title: "Nivel {data>NumNivel}"
+					})
+				},
+				confirm: [that.confirmMoverDialog, that],
+				cancel: [that.cancelMoverDialog, that]
+			});
+			this.getView().addDependent(this.getView().moverNivelesDialog);
 			this.getView().moverNivelesDialog.open();
 		},
 
@@ -137,7 +135,7 @@ sap.ui.define([
 
 			this.moverArticulos(oEvent);
 			this.getComponentModel("data").updateBindings(true);
-			this.getView().moverNivelesDialog.close();
+			// this.getView().moverNivelesDialog.close();
 		},
 
 		onPressEnviar: function () {
@@ -236,7 +234,7 @@ sap.ui.define([
 			var aEModulo = aErroresModulo,
 				aESurtido = aErroresSurtido;
 			var aNiveles = this.getComponentModelProperty("data", "/coleccion/niveles");
-			if(aEModulo.length === 0 && aESurtido.length === 0){
+			if (aEModulo.length === 0 && aESurtido.length === 0) {
 				return;
 			}
 			aNiveles.forEach(function (oNivel) {
@@ -298,7 +296,7 @@ sap.ui.define([
 			this.getView().addTiendaDialog.open();
 		},
 
-		onChangeTienda: function (oEvent) {
+		onChangeTiendaNueva: function (oEvent) {
 
 			var oTienda = this.getView().getModel("tiendas").getProperty("/").find(function (element) {
 				return element.Tienda === oEvent.getParameter("selectedItem").getProperty(
@@ -313,10 +311,10 @@ sap.ui.define([
 			var oNewTienda = this.getView().addTiendaDialog.getModel("newTienda").getProperty("/");
 
 			if (this.getCurrentNivel() !== null && this.getCurrentNivel() !== undefined) {
-				aItemsNivel = this.getTiendasInLevel();
+				var aItemsNivel = this.getTiendasInLevel();
 				var sSurtido = this.getComponentModelProperty("data", "/coleccion/niveles/" + (this.getCurrentNivel() - 1) + "/surtido/Surtido");
 				var oNewTiendaToSet = {
-					"Tienda": oNewTienda.Articulo,
+					"Tienda": oNewTienda.Tienda,
 					"Descripcion": oNewTienda.Descripcion,
 					"FechaInicio": oNewTienda.FechaInicio,
 					"FechaFin": oNewTienda.FechaFin,
@@ -599,11 +597,13 @@ sap.ui.define([
 			// Se deberá enviar a SAP el artículo con fecha fin hoy para los niveles (módulos) 1, 2, 3, 4.
 			if (bSubir) {
 				var aArticuloInsert = aArticulosMover.map(function (oArticulo) {
-					oArticulo.FechaInicio = this.getTodayDateToSend();
-					return oArticulo;
+					var oArt = {};
+					jQuery.extend(true, oArt, oArticulo);
+					oArt.FechaInicio = this.getTodayDateToSend();
+					return oArt;
 				}, this);
-				//Cambiamos las fechas en el actual y en los sucesivos excepto en el final
-				for (var iLevel = iNivelOrigen; iLevel < iNivelSelected; iLevel++) {
+				//Cambiamos las fechas de inicio en los niveles sucesivos excepto en el final
+				for (var iLevel = iNivelOrigen + 1; iLevel < iNivelSelected; iLevel++) {
 					// Obtenemos los articulos del nivel actual
 					var aArticulosLevel = this.getArticulosInLevel(iLevel);
 					// Buscamos si hay alguno que esté en la lista de los articulos a subir
@@ -620,15 +620,16 @@ sap.ui.define([
 				// Bajar un artículo de nivel origen. Por ejemplo, se pasa del nivel origen del 5 al 1 →
 				// Se deberá enviar a SAP el artículo con fecha inicio hoy y fin 31.12.9999 para los niveles 1, 2, 3, 4. 	
 				var aArticuloInsert = aArticulosMover.map(function (oArticulo) {
-					oArticulo.FechaInicio = this.getTodayDateToSend();
-					oArticulo.FechaFin = "99991231";
-					return oArticulo;
+					var oArt = {};
+					jQuery.extend(true, oArt, oArticulo);
+					oArt.FechaInicio = this.getTodayDateToSend();
+					// oArticulo.FechaFin = "99991231";
+					return oArt;
 				}, this);
-				for (var iLevel = iNivelSelected; iLevel >= iNivelSelected; iLevel--) {
-
+				for (var iLevel = iNivelSelected - 1; iLevel >= iNivelSelected; iLevel--) {
 					// Obtenemos los articulos del nivel actual
-					var aArticulosLevel = this.getArticulosInLevel(iLevel)
-						// Buscamos si hay alguno que esté en la lista de los articulos a bajar
+					var aArticulosLevel = this.getArticulosInLevel(iLevel);
+					// Buscamos si hay alguno que esté en la lista de los articulos a bajar
 					aArticulosLevel = aArticulosLevel.filter(function (oArticulo) {
 						return !aListaArticulosMover.includes(oArticulo.Articulo);
 					}, this);
@@ -857,7 +858,7 @@ sap.ui.define([
 
 		getTodayDateToSend: function () {
 
-			var sMonth = new Date().getMonth() < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1);
+			var sMonth = (new Date().getMonth() + 1) < 10 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1);
 			var sDay = new Date().getDate() < 10 ? "0" + (new Date().getDate()) : (new Date().getDate());
 			return new Date().getFullYear() + "" + sMonth + "" + sDay;
 		},
@@ -891,7 +892,7 @@ sap.ui.define([
 				"Edited": oArticulo.Edited,
 				"Borrar": oArticulo.Borrar,
 				"Modulo": oArticulo.Modulo,
-				"Accion": ""
+				"Accion": "B"
 			};
 
 			this.getView().editarArticuloDialog.setModel(new sap.ui.model.json.JSONModel(oNew), "editArticulo");
@@ -951,7 +952,7 @@ sap.ui.define([
 			this.getView().editarTiendaDialog.open();
 		},
 
-		onChangeTienda: function (oEvent) {
+		onChangeTiendaEditar: function (oEvent) {
 
 			var oTienda = this.getComponentModelProperty("tiendas", "/").find(function (element) {
 				return element.Tienda === oEvent.getParameter("selectedItem").getProperty(
@@ -965,7 +966,7 @@ sap.ui.define([
 
 			var oNewTienda = this.getView().editarTiendaDialog.getModel("editTienda").getProperty("/");
 			var sBinding = this.getView().editarTiendaDialog.getCustomData()[0].getValue();
-			
+
 			oNewTienda.Edited = true;
 			this.setComponentModelProperty("data", sBinding, oNewTienda);
 			this.getView().editarTiendaDialog.close();
@@ -1077,7 +1078,7 @@ sap.ui.define([
 		onLiveChangeArticulo: function (oEvent) {
 
 			// this.getModuloTable().filter(undefined);
-			if(oEvent.getParameter("newValue") === ""){
+			if (oEvent.getParameter("newValue") === "") {
 				return;
 			}
 			this.getModuloTable().getBinding("items").filter([new sap.ui.model.Filter({
@@ -1093,6 +1094,13 @@ sap.ui.define([
 				and: false
 			})]);
 
+		},
+		
+		onChangeSearchField : function(oEvent){
+			
+			if(oEvent.getParameter("value") === ""){
+				this.getModuloTable().getBinding("items").filter(undefined);
+			}
 		}
 
 		/**

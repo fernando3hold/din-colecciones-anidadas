@@ -1,22 +1,29 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout"
 	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" xmlns:form="sap.ui.layout.form">
 	<Dialog title="{i18n>title.editarTienda}" showHeader="false">
-		<form:SimpleForm title="{i18n>title.editarTienda}" class="sapUiResponsiveMargin" layout="ColumnLayout" width="500px"
-			singleContainerFullSize="true" labelSpanL="12" labelSpanXL="12" labelSpanM="12" editable="true">
+		<form:SimpleForm title="{i18n>title.editarTienda}" class="sapUiResponsiveMargin" layout="ColumnLayout" width="250px"
+			singleContainerFullSize="true" labelSpanL="6" labelSpanXL="6" labelSpanM="6" editable="true">
 			<!-- PROVEEDOR -->
 			<Label text="{i18n>label.tienda}"/>
-			<Select id="tienda" selectedKey="{editTienda>/Tienda}" change=".onChangeTienda" forceSelection="false"
-				items="{ path: 'tiendas>/', sorter: { path: 'Tienda' } }">
-				<core:Item key="{tiendas>Tienda}" text="{tiendas>Tienda} - {tiendas>Descripcion}"/>
-			</Select>
+			<!--<Select id="tienda" selectedKey="{editTienda>/Tienda}" change=".onChangeTiendaEditar" forceSelection="false" visible="false"-->
+			<!--	items="{ path: 'tiendas>/', sorter: { path: 'Tienda' } }">-->
+			<!--	<core:Item key="{tiendas>Tienda}" text="{tiendas>Tienda} - {tiendas>Descripcion}"/>-->
+			<!--</Select>-->
+			<Text text="{parts: ['editTienda>/Tienda', 'tiendasObj>/'], formatter: '.formatter.formatTextTienda'}"/>
 			<!-- FECHA INICIO -->
 			<Label text="{i18n>label.fechaInicio}"/>
 			<DatePicker id="inicio" value="{editTienda>/FechaInicio}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"
-			enabled="{path: 'editTienda>/FechaInicio', formatter: '.formatter.formatEnabledEditFechaInicio'}"/>
+				enabled="{path: 'editTienda>/FechaInicio', formatter: '.formatter.formatEnabledEditFechaInicio'}" minDate="{viewModel>/minDateInicio}"
+				visible="{path: 'editTienda>/FechaInicio', formatter: '.formatter.formatEnabledEditFechaInicio'}"/>
+			<Text text="{path: 'editTienda>/FechaInicio', formatter: '.formatter.formatDateShow'}"
+				visible="{path: 'editTienda>/FechaInicio', formatter: '.formatter.formatEnabledEditFechaInicioText'}"/>
 			<!-- FECHA FIN -->
 			<Label text="{i18n>label.fechaFin}"/>
 			<DatePicker id="fin" value="{editTienda>/FechaFin}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"
-			enabled="{path: 'editTienda>/FechaFin', formatter: '.formatter.formatEnabledEditFechaFin'}"/>
+				enabled="{path: 'editTienda>/FechaFin', formatter: '.formatter.formatEnabledEditFechaFin'}" minDate="{viewModel>/minDateFin}"
+				visible="{path: 'editTienda>/FechaFin', formatter: '.formatter.formatEnabledEditFechaFin'}"/>
+			<Text text="{path: 'editTienda>/FechaFin', formatter: '.formatter.formatDateShow'}"
+				visible="{path: 'editTienda>/FechaFin', formatter: '.formatter.formatEnabledEditFechaFinText'}"/>
 		</form:SimpleForm>
 		<beginButton>
 			<Button text="Guardar" press=".onPressConfirmEditarTienda"/>

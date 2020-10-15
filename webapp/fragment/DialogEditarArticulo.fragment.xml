@@ -1,25 +1,29 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout"
 	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" xmlns:form="sap.ui.layout.form">
 	<Dialog title="{i18n>title.editarArticulo}" showHeader="false">
-		<form:SimpleForm title="{i18n>title.editarArticulo}" class="sapUiResponsiveMargin" layout="ColumnLayout" width="500px"
-			singleContainerFullSize="true" labelSpanL="12" labelSpanXL="12" labelSpanM="12" editable="true">
+		<form:SimpleForm title="{i18n>title.editarArticulo}" class="sapUiResponsiveMargin" layout="ColumnLayout" width="250px"
+			singleContainerFullSize="true" labelSpanL="6" labelSpanXL="6" labelSpanM="6" editable="true">
 			<!-- PROVEEDOR -->
 			<Label text="{i18n>label.articulo}"/>
-			<Input id="articulo" value="{editArticulo>/Articulo}" valueLiveUpdate="false" showValueHelp="true"
-				valueHelpRequest=".onRequestValueHelpArticulo" change=".onChangeArticulo" enabled="false"/>
-			<Text text="{editArticulo>/Descripcion}"/>
+			<!--<Input id="articulo" value="{editArticulo>/Articulo}" valueLiveUpdate="false" showValueHelp="true"-->
+			<!--	valueHelpRequest=".onRequestValueHelpArticulo" change=".onChangeArticulo" enabled="false" visible="false"/>-->
+			<Text text="{editArticulo>/Articulo} - {editArticulo>/Descripcion}"/>
 			<!-- NO ANIDAR -->
 			<Label text="{i18n>label.noAnidar}" visible="false"/>
 			<CheckBox id="cbNoAnidar" text="{i18n>label.noAnidar}" selected="{editArticulo>/NoAnidar}"
 				visible="{= ${/seleccionado/tipoColeccion} === 'A' ? true: false}"/>
 			<!-- FECHA INICIO -->
-			<Label text="{i18n>label.fechaInicio}"/> 
-			<DatePicker id="inicio" value="{editArticulo>/FechaInicio}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy" minDate="{viewModel>/minDateInicio}"/>
-				<!--enabled="{path: 'editArticulo>/FechaInicio', formatter: '.formatter.formatEnabledEditFechaInicio'}"/>-->
+			<Label text="{i18n>label.fechaInicio}"/>
+			<DatePicker id="inicio" value="{editArticulo>/FechaInicio}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"
+				minDate="{viewModel>/minDateInicio}" visible="{path: 'editArticulo>/FechaInicio', formatter: '.formatter.formatEnabledEditFechaInicio'}"/>
+			<Text text="{path: 'editArticulo>/FechaInicio', formatter: '.formatter.formatDateShow'}"
+				visible="{path: 'editArticulo>/FechaInicio', formatter: '.formatter.formatEnabledEditFechaInicioText'}"/>
 			<!-- FECHA FIN -->
 			<Label text="{i18n>label.fechaFin}"/>
-			<DatePicker id="fin" value="{editArticulo>/FechaFin}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy" minDate="{viewModel>/minDateFin}"/>
-			<!--enabled="{path: 'editArticulo>/FechaFin', formatter: '.formatter.formatEnabledEditFechaFin'}"/>-->
+			<DatePicker id="fin" value="{editArticulo>/FechaFin}" change=".onChangeDatePicker" valueFormat="yyyyMMdd" displayFormat="dd/MM/yyyy"
+				minDate="{viewModel>/minDateFin}" visible="{path: 'editArticulo>/FechaFin', formatter: '.formatter.formatEnabledEditFechaFin'}"/>
+			<Text text="{path: 'editArticulo>/FechaFin', formatter: '.formatter.formatDateShow'}"
+				visible="{path: 'editArticulo>/FechaFin', formatter: '.formatter.formatEnabledEditFechaInicioText'}"/>
 		</form:SimpleForm>
 		<beginButton>
 			<Button text="Guardar" press=".onPressConfirmarEditarArticulo"/>

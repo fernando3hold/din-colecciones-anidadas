@@ -1,11 +1,11 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout"
 	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" xmlns:form="sap.ui.layout.form">
 	<Dialog title="{i18n>title.nuevaTienda}" showHeader="false">
-		<form:SimpleForm title="{i18n>title.nuevaTienda}" class="sapUiResponsiveMargin" layout="ColumnLayout" width="500px"
+		<form:SimpleForm title="{i18n>title.nuevaTienda}" class="sapUiResponsiveMargin" layout="ColumnLayout" width="250px"
 			singleContainerFullSize="true" labelSpanL="12" labelSpanXL="12" labelSpanM="12" editable="true">
 			<!-- PROVEEDOR -->
 			<Label text="{i18n>label.tienda}"/>
-			<Select id="tienda" selectedKey="{newTienda>/Tienda}" change=".onChangeTienda" forceSelection="false"
+			<Select id="tienda" selectedKey="{newTienda>/Tienda}" change=".onChangeTiendaNueva" forceSelection="false"
 				items="{ path: 'tiendas>/', sorter: { path: 'Tienda' } }">
 				<core:Item key="{tiendas>Tienda}" text="{tiendas>Tienda} - {tiendas>Descripcion}"/>
 			</Select>
