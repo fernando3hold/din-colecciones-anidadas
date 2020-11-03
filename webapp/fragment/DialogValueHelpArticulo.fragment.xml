@@ -1,6 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:fb="sap.ui.comp.filterbar"
 	xmlns:helpDialog="sap.ui.comp.valuehelpdialog" xmlns:uxap="sap.uxap">
-	<helpDialog:ValueHelpDialog id="valueHelpDialog" title="{i18n>title.searchHelpArtículo}" supportRanges="false" tokenDisplayBehavior="idOnly"
+	<helpDialog:ValueHelpDialog id="valueHelpDialog" title="{i18n>title.searchHelpArtículo}" supportRanges="false" tokenDisplayBehaviour="idOnly"
 		cancel=".closeValueHelpDialogArticulo" ok="onOKValueHelpArticulo" filterMode="true" key="Id" supportMultiselect="false">
 		<helpDialog:filterBar>
 			<fb:FilterBar showRestoreOnFB="false" showClearOnFB="true" showGoOnFB="true" clear=".clearFiltersValueHelpArticulo"

@@ -1019,7 +1019,6 @@ sap.ui.define([
 			aFinal.forEach(function (oError) {
 				this.getView()._errorsDialog.addItem(new sap.m.MessageItem({
 					title: oError.Message,
-					subtitle: oError.Modulo ? oError.Modulo : oError.Surtido,
 					type: oError.Type === "E" ? "Error" : "Warning"
 				}));
 			}, this);
